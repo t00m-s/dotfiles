@@ -1,0 +1,20 @@
+[modules]
+left = [ "Workspaces" ]
+center = [ ["Tempo"] ]
+right = [ ["Tray", "SystemInfo",  "Privacy", "Settings" ] ]
+[tempo]
+clock_format = "%a %d %b %R"
+weather_location = { City = "Venice" }
+weather_indicator = "Icon"
+[appearance]
+style = "Solid"
+font_name = "JetBrainsMono Nerd Font"
+scale_factor = 1.5
+[workspaces]
+group_by_monitor = true
+[system_info]
+indicators = ["Cpu", "Memory", "Temperature"]
+[system_info.temperature]
+warn_threshold = 60
+alert_threshold = 80
+sensor = "k10temp Tccd1"
