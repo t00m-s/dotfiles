@@ -1,3 +1,4 @@
+outputs = { Targets = ["eDP-1"] }
 [modules]
 left = [ "Workspaces" ]
 center = [ ["Tempo"] ]
@@ -5,16 +6,14 @@ right = [ ["Tray", "SystemInfo",  "Privacy", "Settings" ] ]
 [tempo]
 clock_format = "%a %d %b %R"
 weather_location = { City = "Venice" }
-weather_indicator = "Icon"
+weather_indicator = "IconAndTemperature"
 [appearance]
 style = "Solid"
 font_name = "JetBrainsMono Nerd Font"
 scale_factor = 1.5
-[workspaces]
-group_by_monitor = true
 [system_info]
 indicators = ["Cpu", "Memory", "Temperature"]
+interval = 3
 [system_info.temperature]
-warn_threshold = 60
-alert_threshold = 80
-sensor = "k10temp Tccd1"
+warn_threshold = 70
+alert_threshold = 85
