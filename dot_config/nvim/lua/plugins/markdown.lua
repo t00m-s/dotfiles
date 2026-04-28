@@ -16,7 +16,7 @@ require('render-markdown').setup {
 }
 
 require('obsidian').setup {
-  ui = { enable = false, enabled = false },
+  ui = { enable = false },
   frontmatter = {
     func = function(note)
       local out = {
@@ -36,10 +36,9 @@ require('obsidian').setup {
   },
   templates = { folder = 'template/' },
   legacy_commands = false,
-  completion = { blink = true },
   workspaces = { {
     name = 'Zettelkasten',
-    path = '~/Zettelkasten/',
+    path = '~/Documents/Zettelkasten/',
   } },
 }
 
