@@ -6,11 +6,12 @@ vim.pack.add {
   { src = 'https://github.com/folke/lazydev.nvim' },
   { src = 'https://github.com/folke/which-key.nvim' },
   { src = 'https://github.com/stevearc/conform.nvim' },
+  { src = 'https://github.com/stevearc/overseer.nvim' },
   { src = 'https://github.com/neovim/nvim-lspconfig' }, -- Optional, but saves work
   { src = 'https://github.com/folke/flash.nvim' },
   { src = 'https://github.com/lambdalisue/vim-suda' },
-  { src = 'https://github.com/ThePrimeagen/harpoon',   version = 'harpoon2' },
-  { src = "https://github.com/nvim-mini/mini.surround" }
+  { src = 'https://github.com/ThePrimeagen/harpoon', version = 'harpoon2' },
+  { src = 'https://github.com/nvim-mini/mini.surround' },
 }
 
 require('mason').setup {}
@@ -61,7 +62,7 @@ require('lazydev').setup {
 }
 
 require('mini.surround').setup()
-
+require('overseer').setup()
 
 vim.lsp.enable {
   'lua_ls',
@@ -70,7 +71,7 @@ vim.lsp.enable {
   'ts_ls',
   'clangd',
   'hyprls',
-  'rust_analyzer'
+  'rust_analyzer',
 }
 
 vim.diagnostic.config {
@@ -110,3 +111,12 @@ keymap(
   function() require('flash').treesitter_search() end,
   { desc = 'Flash Treesitter Search' }
 )
+
+keymap(
+  'n',
+  '<leader>ca',
+  function() require('fzf-lua').lsp_code_actions() end,
+  { desc = '[C]ode [A]ction' }
+)
+
+keymap('n', '<leader>cm', '<cmd>OverseerToggle<CR>', { desc = '[C]ompiler [M]enu' })
