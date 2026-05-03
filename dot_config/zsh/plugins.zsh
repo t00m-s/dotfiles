@@ -1,6 +1,11 @@
-source $ZDOTDIR/antigen.zsh
-antigen use oh-my-zsh
-antigen bundle "zsh-users/zsh-autosuggestions"
-antigen bundle "MichaelAquilina/zsh-you-should-use"
-antigen bundle "zsh-users/zsh-syntax-highlighting"
-antigen apply
+# Source antidote.
+[[ -e ${ZDOTDIR:-$HOME}/.antidote ]] ||
+  git clone https://github.com/mattmc3/antidote.git ${ZDOTDIR:-$HOME}/.antidote
+source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh
+source <(antidote init)
+
+antidote bundle getantidote/use-omz
+antidote bundle zsh-users/zsh-autosuggestions
+antidote bundle MichaelAquilina/zsh-you-should-use
+antidote bundle zsh-users/zsh-syntax-highlighting
+antidote bundle spaceship-prompt/spaceship-prompt
