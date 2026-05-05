@@ -1,4 +1,4 @@
-outputs = { Targets = ["eDP-1"] }
+#outputs = { Targets = ["eDP-1"] }
 [modules]
 left = [ "Workspaces" ]
 center = [ ["Tempo"] ]

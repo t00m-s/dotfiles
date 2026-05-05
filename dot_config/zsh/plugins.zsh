@@ -7,5 +7,6 @@ source <(antidote init)
 antidote bundle getantidote/use-omz
 antidote bundle zsh-users/zsh-autosuggestions
 antidote bundle MichaelAquilina/zsh-you-should-use
-antidote bundle zsh-users/zsh-syntax-highlighting
 antidote bundle spaceship-prompt/spaceship-prompt
+# Keep this last
+antidote bundle zsh-users/zsh-syntax-highlighting
