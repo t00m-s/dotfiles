@@ -18,10 +18,53 @@ keymap(
   { desc = '[S]earch [C]onfig' }
 )
 keymap('n', '<leader><leader>', function() require('fzf-lua').history() end)
+
 keymap(
   'n',
   '<leader>sw',
   function() require('fzf-lua').live_grep_native() end,
   { desc = '[S]earch [W]ord' }
 )
+
+keymap(
+  'n',
+  '<leader>ws',
+  function() require('fzf-lua').lsp_live_workspace_symbols() end,
+  { desc = '[W]orkspace [S]ymbols' }
+)
 keymap('n', '<leader>ut', function() require('fzf-lua').undotree() end, { desc = '[U]ndo [T]ree' })
+
+keymap(
+  'n',
+  '<leader>ca',
+  function() require('fzf-lua').lsp_code_actions() end,
+  { desc = '[C]ode [A]ction' }
+)
+
+keymap(
+  'n',
+  '<leader>cr',
+  function() require('fzf-lua').lsp_references() end,
+  { desc = '[C]ode [R]eferences' }
+)
+
+keymap(
+  'n',
+  '<leader>cd',
+  function() require('fzf-lua').lsp_references() end,
+  { desc = '[C]ode [D]efinition' }
+)
+
+keymap(
+  'n',
+  '<leader>cD',
+  function() require('fzf-lua').lsp_declarations() end,
+  { desc = '[C]ode [D]eclaration' }
+)
+
+keymap(
+  'n',
+  '<leader>ci',
+  function() require('fzf-lua').lsp_references() end,
+  { desc = '[C]ode [I]mplementation' }
+)

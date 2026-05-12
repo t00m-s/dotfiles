@@ -5,12 +5,12 @@ center = [ ["Tempo"] ]
 right = [ ["Tray", "SystemInfo",  "Privacy", "Settings" ] ]
 [tempo]
 clock_format = "%a %d %b %R"
-weather_location = { City = "Venice" }
+weather_location = { City = "Mestre" }
 weather_indicator = "IconAndTemperature"
 [appearance]
-style = "Solid"
+style = "Gradient"
 font_name = "JetBrainsMono Nerd Font"
-scale_factor = 1.5
+# scale_factor = 1.5
 [system_info]
 indicators = ["Cpu", "Memory", "Temperature"]
 interval = 3

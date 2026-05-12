@@ -112,11 +112,4 @@ keymap(
   { desc = 'Flash Treesitter Search' }
 )
 
-keymap(
-  'n',
-  '<leader>ca',
-  function() require('fzf-lua').lsp_code_actions() end,
-  { desc = '[C]ode [A]ction' }
-)
-
 keymap('n', '<leader>cm', '<cmd>OverseerToggle<CR>', { desc = '[C]ompiler [M]enu' })

@@ -10,3 +10,4 @@ abbr -a dcd 'docker compose down'
 abbr -a dps 'docker ps --format "{{.id}}  {{.names}}"'
 abbr -a rm 'rm -i'
 abbr -a vi nvim
+abbr -a ff fastfetch

@@ -25,7 +25,6 @@ keymap('n', '<Leader>|', '<cmd>vsplit<CR>', s) -- Split the window vertically
 keymap('n', '<Leader>-', '<cmd>split<CR>', s) -- Split the window horizontally
 keymap('x', 'y', [["+y]], s) -- Yank to the system clipboard in visual mode
 keymap('n', 'x', [["_x]], s) -- Yank to the system clipboard in visual mode
-keymap('n', 'p', 'p==', opts)
 keymap('t', '<Esc>', '<C-\\><C-N>') -- Exit terminal mode
 keymap('n', '<C-a>', 'ggVG', { desc = 'Select all' })
 -- Center view when jumping between search results
