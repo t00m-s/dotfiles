@@ -70,8 +70,8 @@ vim.lsp.enable {
   'ruff',
   'ts_ls',
   'clangd',
-  'hyprls',
   'rust_analyzer',
+  'asm_lsp',
 }
 
 vim.diagnostic.config {
