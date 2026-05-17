@@ -13,7 +13,7 @@ font_name = "JetBrainsMono Nerd Font"
 # scale_factor = 1.5
 [system_info]
 indicators = ["Cpu", "Memory", "Temperature"]
-interval = 3
+interval = 1
 [system_info.temperature]
 warn_threshold = 70
 alert_threshold = 85
