@@ -5,8 +5,6 @@ bat
 bitwarden
 brightnessctl
 btop
-btrfs-assistant
-btrfs-progs
 checksec
 chezmoi
 cmake
@@ -17,7 +15,6 @@ docker
 docker-buildx
 docker-compose
 eza
-f2fs-tools
 fastfetch
 fish
 fwupd
@@ -34,18 +31,15 @@ hyprlauncher
 hyprlock
 hyprpaper
 hyprpolkitagent
-jdk17-openjdk
 lazydocker
 lazygit
 lutris
 neovide
 neovim
-netctl
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 noto-fonts-extra
-nvtop
 nwg-displays
 obsidian
 one_gadget
@@ -60,9 +54,7 @@ reflector
 ripgrep
 rsync
 rustup
-sagemath
 slurp
-snapper
 spotify-launcher
 swaync
 tldr
