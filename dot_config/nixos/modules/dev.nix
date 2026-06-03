@@ -22,6 +22,8 @@
     starship
     zoxide
     tmux
+    delta
+    fastfetch
   ];
 
   programs.neovim = {
