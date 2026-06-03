@@ -1,0 +1,283 @@
+// niri config.kdl
+// Converted from Hyprland Lua config
+// niri uses KDL format: https://github.com/YaTeam/niri/wiki/Configuration
+
+// ─────────────────────────────────────────────
+// ENVIRONMENT VARIABLES
+// ─────────────────────────────────────────────
+
+environment {
+    GDK_SCALE "1.5"
+    XDG_CURRENT_DESKTOP "niri"
+    XDG_SESSION_TYPE "wayland"
+    XDG_SESSION_DESKTOP "niri"
+    GDK_BACKEND "wayland,x11,*"
+    QT_QPA_PLATFORM "wayland;xcb"
+    CLUTTER_BACKEND "wayland"
+    SDL_VIDEODRIVER "wayland"
+    QT_AUTO_SCREEN_SCALE_FACTOR "1"
+    // LIBVA_DRIVER_NAME "nvidia"
+    // __GLX_VENDOR_LIBRARY_NAME "nvidia"
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+    // NVD_BACKEND "direct"
+    // AQ_NO_ATOMIC "1"
+    // dGPU
+    // AQ_DRM_DEVICES "/dev/dri/card1"
+    // __EGL_VENDOR_LIBRARY_FILENAMES "/usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/50_mesa.json"
+}
+
+// ─────────────────────────────────────────────
+// OUTPUTS (MONITORS)
+// ─────────────────────────────────────────────
+
+output "eDP-1" {
+    mode "1920x1200@144.000"
+    scale 1.25
+    position x=0 y=0
+}
+
+output "HDMI-A-1" {
+    mode "1920x1080@240.000"
+    scale 1.0
+}
+output "DP-1" {
+    mode "1920x1080@144.001"
+    scale 1.0
+}
+
+// ─────────────────────────────────────────────
+// INPUT
+// ─────────────────────────────────────────────
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+            variant "intl"
+        }
+        numlock
+    }
+
+    touchpad {
+        natural-scroll
+        tap
+    }
+
+    mouse {
+        // accel-speed 0.0
+    }
+
+    // cursor size is set via XCURSOR_SIZE env var above
+}
+
+// ─────────────────────────────────────────────
+// LAYOUT
+// ─────────────────────────────────────────────
+
+layout {
+    gaps 10
+
+    center-focused-column "never"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+        proportion 1.0
+    }
+
+    default-column-width { proportion 0.5; }
+
+    focus-ring {
+        width 2
+        active-color "#595959aa"
+        inactive-color "#595959aa"
+    }
+
+    border {
+        off
+    }
+
+    shadow {
+        on
+        softness 4
+        spread 3
+        offset x=0 y=0
+        color "#1a1a1aee"
+    }
+}
+
+// ─────────────────────────────────────────────
+// LOOK AND FEEL
+// ─────────────────────────────────────────────
+
+prefer-no-csd
+
+// Rounded corners via window-rule
+window-rule {
+    geometry-corner-radius 5
+    clip-to-geometry true
+}
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+// ─────────────────────────────────────────────
+// ANIMATIONS
+// ─────────────────────────────────────────────
+
+animations {
+    slowdown 0.85
+
+    workspace-switch {
+        spring damping-ratio=1.0 stiffness=1000 epsilon=0.0001
+    }
+
+    window-open {
+        duration-ms 250
+        curve "ease-out-expo"
+    }
+
+    window-close {
+        duration-ms 150
+        curve "ease-out-quad"
+    }
+
+    horizontal-view-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    window-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    window-resize {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+}
+
+// ─────────────────────────────────────────────
+// AUTOSTART
+// ─────────────────────────────────────────────
+
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
+spawn-at-startup "systemctl" "--user" "start" "hyprpolkitagent.service"
+spawn-at-startup "systemctl" "--user" "start" "darkman.service"
+spawn-at-startup "systemctl" "--user" "start" "opentabletdriver.service"
+spawn-at-startup "qs" "-c" "noctalia-shell"
+spawn-at-startup "hyprpaper"
+spawn-at-startup "clipse" "-listen"
+spawn-at-startup "udiskie"
+spawn-at-startup "hypridle"
+spawn-at-startup "swaync"
+
+// ─────────────────────────────────────────────
+// KEYBINDINGS
+// ─────────────────────────────────────────────
+// mainMod = Alt
+
+binds {
+    // ── App launchers ──
+    Alt+Return { spawn "sh" "-c" "GTK_IM_MODULE=simple ghostty"; }
+    Alt+N      { spawn "neovide"; }
+    Alt+W      { spawn "zen-browser"; }
+    Alt+Q      { close-window; }
+    Alt+E      { spawn "sh" "-c" "GTK_IM_MODULE=simple ghostty -e yazi"; }
+    Alt+V      { toggle-window-floating; }
+    Alt+G      { spawn "hyprlauncher"; }
+    Alt+C      { spawn "sh" "-c" "GTK_IM_MODULE=simple ghostty -e clipse"; }
+    Alt+P      { fullscreen-window; }  // pseudo-tiling has no direct niri equiv; fullscreen is closest
+    Alt+Ctrl+L { spawn "hyprlock"; }
+
+    F11        { fullscreen-window; }
+
+    // ── Focus movement ──
+    Alt+H { focus-column-left; }
+    Alt+L { focus-column-right; }
+    Alt+K { focus-window-up; }
+    Alt+J { focus-window-down; }
+
+    // ── Workspace switching (1–10) ──
+    Alt+1 { focus-workspace 1; }
+    Alt+2 { focus-workspace 2; }
+    Alt+3 { focus-workspace 3; }
+    Alt+4 { focus-workspace 4; }
+    Alt+5 { focus-workspace 5; }
+    Alt+6 { focus-workspace 6; }
+    Alt+7 { focus-workspace 7; }
+    Alt+8 { focus-workspace 8; }
+    Alt+9 { focus-workspace 9; }
+    Alt+0 { focus-workspace 10; }
+
+    // ── Move window to workspace ──
+    Alt+Shift+1 { move-column-to-workspace 1; }
+    Alt+Shift+2 { move-column-to-workspace 2; }
+    Alt+Shift+3 { move-column-to-workspace 3; }
+    Alt+Shift+4 { move-column-to-workspace 4; }
+    Alt+Shift+5 { move-column-to-workspace 5; }
+    Alt+Shift+6 { move-column-to-workspace 6; }
+    Alt+Shift+7 { move-column-to-workspace 7; }
+    Alt+Shift+8 { move-column-to-workspace 8; }
+    Alt+Shift+9 { move-column-to-workspace 9; }
+    Alt+Shift+0 { move-column-to-workspace 10; }
+
+    // ── Resize ──
+    Alt+R { switch-preset-column-width; }
+
+    // Manual resize (use separate modifier to avoid Alt+Ctrl+L conflict with hyprlock)
+    Alt+Shift+H { set-column-width "-10%"; }
+    Alt+Shift+L { set-column-width "+10%"; }
+    Alt+Shift+K { set-window-height "+10%"; }
+    Alt+Shift+J { set-window-height "-10%"; }
+
+    // ── Scroll workspaces ──
+    Alt+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+    Alt+WheelScrollUp   cooldown-ms=150 { focus-workspace-up; }
+
+    // ── Mouse window ops (drag-to-move is built-in; these are extras) ──
+    // Alt+MouseLeft  { focus-window-or-workspace-under-cursor; }
+
+    // ── Screenshot ──
+    Print          { screenshot; }
+    Ctrl+Print     { screenshot-screen; }
+    Alt+Print      { screenshot-window; }
+
+    // ── Media keys ──
+    XF86AudioRaiseVolume  allow-when-locked=true { spawn "wpctl" "set-volume" "-l" "1" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    XF86AudioLowerVolume  allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    XF86AudioMute         allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioMicMute      allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "-e4" "-n2" "set" "5%+"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "-e4" "-n2" "set" "5%-"; }
+    XF86AudioNext         allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioPause        allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPlay         allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPrev         allow-when-locked=true { spawn "playerctl" "previous"; }
+
+    // ── Exit ──
+    Alt+M { quit; }
+}
+
+// ─────────────────────────────────────────────
+// WINDOW RULES
+// ─────────────────────────────────────────────
+
+// xwaylandvideobridge: invisible sink
+window-rule {
+    match app-id="xwaylandvideobridge"
+    opacity 0.0
+    open-floating true
+    focus-ring { off; }
+    border { off; }
+    shadow { off; }
+}
+
+// hyprland-run equivalent: float near bottom
+window-rule {
+    match app-id="hyprland-run"
+    open-floating true
+}
+
+
+debug {
+  render-drm-device "/dev/dri/card1"
+}
