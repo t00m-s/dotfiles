@@ -8,11 +8,11 @@ require 'monitors'
 
 -- Set programs that you use
 local terminal = 'GTK_IM_MODULE=simple ghostty'
-local fileManager = terminal .. '-e yazi'
+local fileManager = terminal .. ' -e yazi'
 local menu = 'hyprlauncher'
 local browser = 'zen-browser'
-local clipboard = terminal .. '-e clipse'
-local bar = 'ashell'
+local clipboard = terminal .. ' -e clipse'
+local bar = 'qs - c noctalia-shell'
 
 -------------------
 ---- AUTOSTART ----
@@ -24,8 +24,10 @@ local bar = 'ashell'
 -- Or execute your favorite apps at launch like this:
 --
 hl.on('hyprland.start', function()
+  hl.exec_cmd 'dbus-update-activation-environment --systemd --all'
   hl.exec_cmd 'systemctl --user start hyprpolkitagent.service'
   hl.exec_cmd 'systemctl --user start darkman.service'
+  hl.exec_cmd 'systemctl --user start opentabletdriver.service'
   hl.exec_cmd(bar)
   hl.exec_cmd 'hyprpaper'
   hl.exec_cmd 'clipse -listen'
@@ -81,6 +83,7 @@ hl.config {
     kb_options = '',
     kb_rules = '',
 
+    numlock_by_default = true,
     follow_mouse = 1,
 
     sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
