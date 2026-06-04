@@ -9,7 +9,6 @@
     ripgrep # Lightning-fast grep
     bat # Syntax-highlighted cat
     htop # System monitor
-    neovim
     fish
     chezmoi
     vim
@@ -24,14 +23,10 @@
     tmux
     delta
     fastfetch
+    unzip
+    uv
   ];
 
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
-  };
 
   programs.fish = {
     enable = true;

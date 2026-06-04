@@ -15,8 +15,9 @@
     # Enables experimental Wayland support
     wayland.enable = true;
   };
+
   # 3. Ghostty Terminal Installation
-  environment.systemPackages = [ pkgs.ghostty ];
+  environment.systemPackages = with pkgs; [ ghostty ];
 
   # 4. Fonts and Emojis Setup
   fonts.packages = with pkgs; [
