@@ -71,7 +71,7 @@ vim.lsp.enable {
   'ts_ls',
   'clangd',
   'rust_analyzer',
-  'asm_lsp',
+  'jdtls',
 }
 
 vim.diagnostic.config {

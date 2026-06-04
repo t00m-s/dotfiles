@@ -12,6 +12,7 @@ if not type -q fisher
     fisher install icezyclon/zoxide.fish 
     fisher install paysonwallach/fish-you-should-use
 end
+
 fzf --fish | source
 zoxide init fish | source
 starship init fish | source
