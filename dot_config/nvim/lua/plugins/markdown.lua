@@ -15,32 +15,32 @@ require('render-markdown').setup {
   },
 }
 
-require('obsidian').setup {
-  ui = { enable = false },
-  frontmatter = {
-    func = function(note)
-      local out = {
-        title = note.id or note.title,
-        tags = note.tags,
-        status = 'in-progress',
-        updated = os.date '%Y-%m-%d',
-      }
-      -- preserve any extra fields already in the note
-      if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
-        for k, v in pairs(note.metadata) do
-          out[k] = v
-        end
-      end
-      return out
-    end,
-  },
-  templates = { folder = 'template/' },
-  legacy_commands = false,
-  workspaces = { {
-    name = 'Zettelkasten',
-    path = '~/Documents/Zettelkasten/',
-  } },
-}
+-- require('obsidian').setup {
+--   ui = { enable = false },
+--   frontmatter = {
+--     func = function(note)
+--       local out = {
+--         title = note.id or note.title,
+--         tags = note.tags,
+--         status = 'in-progress',
+--         updated = os.date '%Y-%m-%d',
+--       }
+--       -- preserve any extra fields already in the note
+--       if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+--         for k, v in pairs(note.metadata) do
+--           out[k] = v
+--         end
+--       end
+--       return out
+--     end,
+--   },
+--   templates = { folder = 'template/' },
+--   legacy_commands = false,
+--   -- workspaces = { {
+--   --   name = 'Zettelkasten',
+--   --   path = '~/Documents/Zettelkasten/',
+--   -- } },
+-- }
 
 local keymap = vim.keymap.set
 keymap(

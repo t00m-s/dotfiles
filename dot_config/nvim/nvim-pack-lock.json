@@ -22,17 +22,9 @@
       "src": "https://github.com/ThePrimeagen/harpoon",
       "version": "'harpoon2'"
     },
-    "jb.nvim": {
-      "rev": "5aa977eb29c758a4ff0e82ac75c45d7f8cacfe50",
-      "src": "https://github.com/nickkadutskyi/jb.nvim"
-    },
     "lazydev.nvim": {
       "rev": "ff2cbcba459b637ec3fd165a2be59b7bbaeedf0d",
       "src": "https://github.com/folke/lazydev.nvim"
-    },
-    "lualine.nvim": {
-      "rev": "131a558e13f9f28b15cd235557150ccb23f89286",
-      "src": "https://github.com/nvim-lualine/lualine.nvim"
     },
     "mason.nvim": {
       "rev": "8e921c2b68571e978db5d4d3fef9c9a7f8755473",

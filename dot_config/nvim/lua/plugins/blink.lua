@@ -43,9 +43,6 @@ require('blink.cmp').setup {
       'path',
       'snippets',
       'buffer',
-      'obsidian',
-      'obsidian_new',
-      'obsidian_tags',
     },
     providers = {
       lazydev = {
