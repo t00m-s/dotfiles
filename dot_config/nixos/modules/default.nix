@@ -5,6 +5,7 @@
     ./niri.nix
     ./audio.nix
     ./networking.nix
+    ./browser.nix
     ./power.nix
     ./print.nix
     ./dev.nix

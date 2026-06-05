@@ -2,7 +2,11 @@
   description = "My NixOS System Flake with Formatter";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, ... }@inputs:
@@ -13,8 +17,9 @@
     {
       # 1. Your System Configuration
       nixosConfigurations = {
-        "nixos" = nixpkgs.lib.nixosSystem {
+        "poldo" = nixpkgs.lib.nixosSystem {
           inherit system;
+          specialArgs = { inherit inputs; };
           modules = [
             ./configuration.nix
             ./hardware-configuration.nix
