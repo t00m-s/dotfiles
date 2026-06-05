@@ -8,6 +8,7 @@
     ./power.nix
     ./print.nix
     ./dev.nix
+    ./ld.nix
     ./nvim.nix
   ];
 }

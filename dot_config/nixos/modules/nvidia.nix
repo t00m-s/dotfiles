@@ -49,4 +49,7 @@
       # amdgpuBusId = "PCI:5:0:0";
     };
   };
+  # Boot related stuff for nvidia gpus
+  boot.kernelParams = [ "nvidia.NVreg_TemporaryFilePath=/var/tmp" ];
+  boot.blacklistedKernelModules = [ "nouveau" ];
 }
