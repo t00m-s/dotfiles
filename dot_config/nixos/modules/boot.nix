@@ -1,6 +1,8 @@
-{ ... }:
+{ pkgs, ... }:
 {
+  boot.loader.grub.enable = false;
   boot.loader.limine.enable = true;
+  # boot.loader.limine.enableEfi = true;
   boot.loader.efi.canTouchEfiVariables = true;
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;

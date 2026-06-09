@@ -11,6 +11,7 @@
     htop # System monitor
     fish
     chezmoi
+    btop
     vim
     nixfmt
     wget

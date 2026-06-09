@@ -2,6 +2,8 @@
 
 {
   imports = [
+    ./boot.nix
+    ./nvidia.nix
     ./niri.nix
     ./audio.nix
     ./networking.nix

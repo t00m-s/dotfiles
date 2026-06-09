@@ -5,19 +5,21 @@
   programs.niri.enable = true;
 
   # 2. Display Manager (GDM plays beautifully with modern Wayland sessions)
-  # services.displaymanager.gdm = {
+  # services.displayManager.gdm = {
   #   enable = true;
   # };
-
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  security.polkit.enable = true; # polkit
+  services.gnome.gnome-keyring.enable = true; # secret service
   services.displayManager.sddm = {
+    theme = "sddm-astronaut-theme";
+    extraPackages = [ pkgs.sddm-astronaut ];
     enable = true;
-
-    # Enables experimental Wayland support
     wayland.enable = true;
   };
 
   # 3. Ghostty Terminal Installation
-  environment.systemPackages = with pkgs; [ ghostty ];
+  environment.systemPackages = with pkgs; [ ghostty xwayland-satellite fuzzel ];
 
   # 4. Fonts and Emojis Setup
   fonts.packages = with pkgs; [

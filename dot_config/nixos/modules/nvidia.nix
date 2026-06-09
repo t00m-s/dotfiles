@@ -8,6 +8,15 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true; # Required for Steam / 32-bit gaming structures
+    extraPackages = with pkgs; [
+      rocmPackages.clr # For ROCm/OpenCL support on the Ryzen iGPU
+      libva-vdpau-driver
+      libvdpau-va-gl
+    ];
+    extraPackages32 = with pkgs.pkgsi686Linux; [
+      libva-vdpau-driver
+      libvdpau-va-gl
+    ];
   };
 
   # 3. Inform the system to load the NVIDIA driver
@@ -40,16 +49,16 @@
         enableOffloadCmd = true; # Adds 'nvidia-offload' script to your shell path
       };
 
-      # ⚠️ CRITICAL STEP: You must replace these placeholder values 
-      # with your machine's exact PCI Bus IDs. See instructions below.
-      # nvidiaBusId = "PCI:1:0:0";
-
-      # Uncomment ONLY the one matching your system CPU:
-      # intelBusId = "PCI:0:2:0";
-      # amdgpuBusId = "PCI:5:0:0";
+      nvidiaBusId = "PCI:1@0:0:0";
+      amdgpuBusId = "PCI:6@0:0:0";
     };
   };
   # Boot related stuff for nvidia gpus
   boot.kernelParams = [ "nvidia.NVreg_TemporaryFilePath=/var/tmp" ];
   boot.blacklistedKernelModules = [ "nouveau" ];
+  environment.systemPackages = with pkgs; [
+    nvtopPackages.nvidia # Great CLI task monitor for both AMD and NVIDIA GPUs
+    vulkan-tools # Provides 'vulkaninfo' and 'vkcube' to test acceleration
+    libva-utils # Provides 'vainfo' to verify video hardware acceleration
+  ];
 }
