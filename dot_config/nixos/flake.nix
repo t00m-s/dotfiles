@@ -7,9 +7,10 @@
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
   };
 
-  outputs = { self, nixpkgs, ... }@inputs:
+  outputs = { self, nixpkgs, nix-cachyos-kernel, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -21,13 +22,22 @@
           inherit system;
           specialArgs = { inherit inputs; };
           modules = [
+            (
+              { pkgs, ... }:
+              {
+                nixpkgs.overlays = [
+                  nix-cachyos-kernel.overlays.pinned
+                ];
+
+              }
+            )
+
             ./configuration.nix
             ./hardware-configuration.nix
           ];
         };
       };
 
-      # 2. Your System Formatter (makes 'nix fmt' work in this directory)
-      formatter.${system} = pkgs.nixpkgs-fmt; # or pkgs.alejandra if you prefer
+      formatter.${system} = pkgs.nixpkgs-fmt;
     };
 }
