@@ -6,10 +6,11 @@
     ./audio.nix
     ./networking.nix
     ./browser.nix
-    ./power.nix
+    ./laptop.nix
     ./print.nix
     ./dev.nix
     ./ld.nix
     ./nvim.nix
+    ./optimization.nix
   ];
 }
