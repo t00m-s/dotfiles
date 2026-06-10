@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   # 1. Window Manager
@@ -19,7 +19,12 @@
   };
 
   # 3. Ghostty Terminal Installation
-  environment.systemPackages = with pkgs; [ ghostty xwayland-satellite fuzzel ];
+  environment.systemPackages = with pkgs; [
+    ghostty
+    xwayland-satellite
+    fuzzel
+    inputs.noctalia.packages.${system}.default
+  ];
 
   # 4. Fonts and Emojis Setup
   fonts.packages = with pkgs; [

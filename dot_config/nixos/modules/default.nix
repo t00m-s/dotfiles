@@ -3,6 +3,7 @@
 {
   imports = [
     ./boot.nix
+    ./useful.nix
     ./nvidia.nix
     ./niri.nix
     ./audio.nix
@@ -13,6 +14,7 @@
     ./dev.nix
     ./ld.nix
     ./nvim.nix
+    ./python.nix
     ./optimization.nix
   ];
 }

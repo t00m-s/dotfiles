@@ -2,6 +2,7 @@
 {
   environment.systemPackages = with pkgs; [
     neovim
+    tree-sitter
     lua-language-server
     stylua
     ruff

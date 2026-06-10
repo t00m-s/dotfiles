@@ -2,13 +2,13 @@
 
 {
   environment.systemPackages = with pkgs; [
-    eza # Modern ls replacement
-    lazygit # TUI Git manager
-    lazydocker # TUI Docker manager
-    fzf # Fuzzy Finder
-    ripgrep # Lightning-fast grep
-    bat # Syntax-highlighted cat
-    htop # System monitor
+    eza
+    lazygit
+    lazydocker
+    fzf
+    ripgrep
+    bat
+    htop
     fish
     chezmoi
     btop
@@ -16,7 +16,6 @@
     nixfmt
     wget
     git
-    tree-sitter
     gcc
     darkman
     starship
@@ -25,7 +24,8 @@
     delta
     fastfetch
     unzip
-    uv
+    cmake
+    pkg-config
   ];
 
 

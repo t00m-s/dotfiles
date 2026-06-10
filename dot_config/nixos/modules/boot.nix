@@ -1,12 +1,9 @@
 { pkgs, ... }:
 {
-  boot.loader.grub.enable = false;
   boot.loader.limine.enable = true;
-  # boot.loader.limine.enableEfi = true;
   boot.loader.efi.canTouchEfiVariables = true;
   # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # USE WHEN NOT ON VM
-  # boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-linux-cachyos-bore-lto-zen4
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-bore-lto-zen4;
 }

@@ -7,10 +7,16 @@
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
+    nix-cachyos-kernel = {
+      url = "github:xddxdd/nix-cachyos-kernel/release";
+    };
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nix-cachyos-kernel, ... }@inputs:
+  outputs = { self, nixpkgs, nix-cachyos-kernel, noctalia, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -19,12 +25,13 @@
       # 1. Your System Configuration
       nixosConfigurations = {
         "poldo" = nixpkgs.lib.nixosSystem {
-          inherit system;
+          # inherit system;
           specialArgs = { inherit inputs; };
           modules = [
             (
               { pkgs, ... }:
               {
+                nixpkgs.hostPlatform = "x86_64-linux";
                 nixpkgs.overlays = [
                   nix-cachyos-kernel.overlays.pinned
                 ];
