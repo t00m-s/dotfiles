@@ -179,7 +179,7 @@ binds {
     // ── App launchers ──
     Alt+Return { spawn "sh" "-c" "GTK_IM_MODULE=simple ghostty"; }
     Alt+N      { spawn "neovide"; }
-    Alt+W      { spawn "zen-browser"; }
+    Alt+W      { spawn "zen"; }
     Alt+Q      { close-window; }
     Alt+E      { spawn "sh" "-c" "GTK_IM_MODULE=simple ghostty -e yazi"; }
     Alt+V      { toggle-window-floating; }

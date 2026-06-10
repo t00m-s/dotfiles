@@ -1,6 +1,4 @@
-command = /usr/bin/fish
 shell-integration = fish
-#shell-integration-features = ssh-env,ssh-terminfo
 font-family = "JetBrainsMono Nerd Font"
 font-size = 14
 theme = light:TokyoNight Day,dark:TokyoNight Storm
