@@ -23,7 +23,7 @@
     ghostty
     xwayland-satellite
     fuzzel
-    inputs.noctalia.packages.${system}.default
+    inputs.noctalia.packages.${stdenv.hostPlatform.system}.default
   ];
 
   # 4. Fonts and Emojis Setup
