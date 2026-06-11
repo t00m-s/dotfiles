@@ -24,6 +24,8 @@
     xwayland-satellite
     fuzzel
     inputs.noctalia.packages.${stdenv.hostPlatform.system}.default
+    playerctl
+    brightnessctl
   ];
 
   # 4. Fonts and Emojis Setup
