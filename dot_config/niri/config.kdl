@@ -16,14 +16,7 @@ environment {
     CLUTTER_BACKEND "wayland"
     SDL_VIDEODRIVER "wayland"
     QT_AUTO_SCREEN_SCALE_FACTOR "1"
-    // LIBVA_DRIVER_NAME "nvidia"
-    // __GLX_VENDOR_LIBRARY_NAME "nvidia"
     ELECTRON_OZONE_PLATFORM_HINT "auto"
-    // NVD_BACKEND "direct"
-    // AQ_NO_ATOMIC "1"
-    // dGPU
-    // AQ_DRM_DEVICES "/dev/dri/card1"
-    // __EGL_VENDOR_LIBRARY_FILENAMES "/usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/50_mesa.json"
 }
 
 // ─────────────────────────────────────────────
@@ -80,13 +73,15 @@ layout {
     center-focused-column "never"
 
     preset-column-widths {
+        proportion 0.25
         proportion 0.33333
         proportion 0.5
         proportion 0.66667
+        proportion 0.75
         proportion 1.0
     }
 
-    default-column-width { proportion 0.5; }
+    default-column-width { proportion 0.75; }
 
     focus-ring {
         width 2
@@ -160,15 +155,8 @@ animations {
 // ─────────────────────────────────────────────
 
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
-spawn-at-startup "systemctl" "--user" "start" "hyprpolkitagent.service"
 spawn-at-startup "systemctl" "--user" "start" "darkman.service"
-spawn-at-startup "systemctl" "--user" "start" "opentabletdriver.service"
-spawn-at-startup "qs" "-c" "noctalia-shell"
-spawn-at-startup "hyprpaper"
-spawn-at-startup "clipse" "-listen"
-spawn-at-startup "udiskie"
-spawn-at-startup "hypridle"
-spawn-at-startup "swaync"
+spawn-at-startup "noctalia"
 
 // ─────────────────────────────────────────────
 // KEYBINDINGS
@@ -178,15 +166,11 @@ spawn-at-startup "swaync"
 binds {
     // ── App launchers ──
     Alt+Return { spawn "sh" "-c" "GTK_IM_MODULE=simple ghostty"; }
-    Alt+N      { spawn "neovide"; }
     Alt+W      { spawn "zen"; }
     Alt+Q      { close-window; }
     Alt+E      { spawn "sh" "-c" "GTK_IM_MODULE=simple ghostty -e yazi"; }
     Alt+V      { toggle-window-floating; }
-    Alt+G      { spawn "hyprlauncher"; }
-    Alt+C      { spawn "sh" "-c" "GTK_IM_MODULE=simple ghostty -e clipse"; }
-    Alt+P      { fullscreen-window; }  // pseudo-tiling has no direct niri equiv; fullscreen is closest
-    Alt+Ctrl+L { spawn "hyprlock"; }
+    ALT+Space  { spawn "fuzzel"; }
 
     F11        { fullscreen-window; }
 
@@ -238,8 +222,6 @@ binds {
 
     // ── Screenshot ──
     Print          { screenshot; }
-    Ctrl+Print     { screenshot-screen; }
-    Alt+Print      { screenshot-window; }
 
     // ── Media keys ──
     XF86AudioRaiseVolume  allow-when-locked=true { spawn "wpctl" "set-volume" "-l" "1" "@DEFAULT_AUDIO_SINK@" "5%+"; }
@@ -269,15 +251,4 @@ window-rule {
     focus-ring { off; }
     border { off; }
     shadow { off; }
-}
-
-// hyprland-run equivalent: float near bottom
-window-rule {
-    match app-id="hyprland-run"
-    open-floating true
-}
-
-
-debug {
-  render-drm-device "/dev/dri/card1"
 }
