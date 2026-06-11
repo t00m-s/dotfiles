@@ -3,11 +3,10 @@
   nix.optimise.automatic = true;
   nix.gc = {
     automatic = true;
-    dates = "weekly";
+    dates = "daily";
     options = "--delete-older-than 3d";
   };
 
-  # READD when not on VM
   nix.settings.system-features = [
     "nixos-test"
     "benchmark"

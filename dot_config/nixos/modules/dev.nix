@@ -11,7 +11,10 @@
     htop
     fish
     chezmoi
-    btop
+    (pkgs.btop.override {
+      cudaSupport = true;
+      rocmSupport = true;
+    })
     vim
     nixfmt
     wget
@@ -26,6 +29,7 @@
     unzip
     cmake
     pkg-config
+    jetbrains.idea
   ];
 
 

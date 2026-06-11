@@ -4,6 +4,7 @@
   imports = [
     ./boot.nix
     ./useful.nix
+    ./gaming.nix
     ./nvidia.nix
     ./niri.nix
     ./audio.nix
