@@ -26,12 +26,13 @@ environment {
 output "eDP-1" {
     mode "1920x1200@144.000"
     scale 1.25
-    position x=0 y=0
+    position x=0 y=1080
 }
 
 output "HDMI-A-1" {
     mode "1920x1080@240.000"
     scale 1.0
+    position x=0 y=0
 }
 output "DP-1" {
     mode "1920x1080@144.001"
@@ -60,7 +61,10 @@ input {
         // accel-speed 0.0
     }
 
-    // cursor size is set via XCURSOR_SIZE env var above
+}
+
+cursor {
+  xcursor-size 24
 }
 
 // ─────────────────────────────────────────────
@@ -216,9 +220,6 @@ binds {
     // ── Scroll workspaces ──
     Alt+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
     Alt+WheelScrollUp   cooldown-ms=150 { focus-workspace-up; }
-
-    // ── Mouse window ops (drag-to-move is built-in; these are extras) ──
-    // Alt+MouseLeft  { focus-window-or-workspace-under-cursor; }
 
     // ── Screenshot ──
     Print          { screenshot; }
