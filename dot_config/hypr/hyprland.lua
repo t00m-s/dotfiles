@@ -9,31 +9,18 @@ require 'monitors'
 -- Set programs that you use
 local terminal = 'GTK_IM_MODULE=simple ghostty'
 local fileManager = terminal .. ' -e yazi'
-local menu = 'hyprlauncher'
-local browser = 'zen-browser'
-local clipboard = terminal .. ' -e clipse'
-local bar = 'qs - c noctalia-shell'
+local menu = 'fuzzel'
+local browser = 'zen'
+local bar = 'noctalia'
 
 -------------------
 ---- AUTOSTART ----
 -------------------
-
--- See https://wiki.hypr.land/Configuring/Basics/Autostart/
-
--- Autostart necessary processes (like notifications daemons, status bars, etc.)
--- Or execute your favorite apps at launch like this:
---
 hl.on('hyprland.start', function()
   hl.exec_cmd 'dbus-update-activation-environment --systemd --all'
-  hl.exec_cmd 'systemctl --user start hyprpolkitagent.service'
-  hl.exec_cmd 'systemctl --user start darkman.service'
-  hl.exec_cmd 'systemctl --user start opentabletdriver.service'
   hl.exec_cmd(bar)
   hl.exec_cmd 'hyprpaper'
-  hl.exec_cmd 'clipse -listen'
-  hl.exec_cmd 'udiskie'
   hl.exec_cmd 'hypridle'
-  hl.exec_cmd 'swaync'
 end)
 
 -------------------------------
@@ -108,7 +95,6 @@ hl.gesture { fingers = 2, direction = 'pinch', action = 'cursorZoom', zoom_level
 local mainMod = 'ALT'
 
 hl.bind(mainMod .. ' + RETURN', hl.dsp.exec_cmd(terminal))
-hl.bind(mainMod .. ' + N', hl.dsp.exec_cmd 'neovide')
 hl.bind(mainMod .. ' + W', hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. ' + Q', hl.dsp.window.close())
 hl.bind(
@@ -117,10 +103,8 @@ hl.bind(
 )
 hl.bind(mainMod .. ' + E', hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. ' + V', hl.dsp.window.float { action = 'toggle' })
-hl.bind(mainMod .. ' + G', hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. ' + C', hl.dsp.exec_cmd(clipboard))
+hl.bind(mainMod .. ' + SPACE', hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. ' + P', hl.dsp.window.pseudo())
-hl.bind(mainMod .. ' + CTRL + L', hl.dsp.exec_cmd 'hyprlock')
 hl.bind('F11', hl.dsp.window.fullscreen { action = 'toggle' })
 
 hl.bind(mainMod .. ' + H', hl.dsp.focus { direction = 'left' })

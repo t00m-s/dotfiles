@@ -7,6 +7,7 @@
     ./gaming.nix
     ./nvidia.nix
     ./niri.nix
+    ./hyprland.nix
     ./audio.nix
     ./networking.nix
     ./browser.nix
@@ -17,5 +18,6 @@
     ./nvim.nix
     ./python.nix
     ./optimization.nix
+    ./fonts.nix
   ];
 }
