@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
     neovim
@@ -7,6 +7,7 @@
     stylua
     ruff
     basedpyright
+    nil
   ];
 
   programs.neovim = {
@@ -16,4 +17,3 @@
     vimAlias = true;
   };
 }
-

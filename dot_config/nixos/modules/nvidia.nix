@@ -17,7 +17,10 @@
     ];
   };
 
-  services.xserver.videoDrivers = [ "nvidia" "amdgpu" ];
+  services.xserver.videoDrivers = [
+    "nvidia"
+    "amdgpu"
+  ];
 
   hardware.nvidia = {
     modesetting.enable = true;
@@ -47,32 +50,33 @@
     vulkan-tools
     libva-utils
   ];
-  environment.etc."nvidia/nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json" = {
-    text = ''
-      {
-        "rules": [
-          {
-            "pattern": {
-              "feature": "procname",
-              "matches": "niri"
-            },
-            "profile": "Limit Free Buffer Pool On Wayland Compositors"
-          }
-        ],
-        "profiles": [
-          {
-            "name": "Limit Free Buffer Pool On Wayland Compositors",
-            "settings": [
-              {
-                "key": "GLVidHeapReuseRatio",
-                "value": 0
-              }
-            ]
-          }
-        ]
-      }
-    '';
-  };
+  environment.etc."nvidia/nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json" =
+    {
+      text = ''
+        {
+          "rules": [
+            {
+              "pattern": {
+                "feature": "procname",
+                "matches": "niri"
+              },
+              "profile": "Limit Free Buffer Pool On Wayland Compositors"
+            }
+          ],
+          "profiles": [
+            {
+              "name": "Limit Free Buffer Pool On Wayland Compositors",
+              "settings": [
+                {
+                  "key": "GLVidHeapReuseRatio",
+                  "value": 0
+                }
+              ]
+            }
+          ]
+        }
+      '';
+    };
   services.udev.extraRules = ''
     KERNEL=="card*", KERNELS=="0000:06:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/amd-igpu"
     KERNEL=="card*", KERNELS=="0000:01:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/nvidia-dgpu"

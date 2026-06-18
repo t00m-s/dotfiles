@@ -1,9 +1,11 @@
-{ config, pkgs, ... }:
+{ ... }:
 
 {
   imports = [
     ./boot.nix
     ./useful.nix
+    ./user.nix
+    ./i18n.nix
     ./gaming.nix
     ./nvidia.nix
     ./niri.nix
