@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -29,9 +29,7 @@
     unzip
     cmake
     pkg-config
-    jetbrains.idea
   ];
-
 
   programs.fish = {
     enable = true;
