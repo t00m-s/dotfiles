@@ -25,6 +25,7 @@
     "${self}/modules/python.nix"
     "${self}/modules/optimization.nix"
     "${self}/modules/fonts.nix"
+    "${self}/modules/keyring.nix"
   ];
   nix.settings.experimental-features = [
     "nix-command"
