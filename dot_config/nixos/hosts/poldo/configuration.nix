@@ -1,11 +1,30 @@
 {
+  self,
   ...
 }:
 
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules
+    "${self}/modules/boot.nix"
+    "${self}/modules/useful.nix"
+    "${self}/modules/user.nix"
+    "${self}/modules/i18n.nix"
+    "${self}/modules/gaming.nix"
+    "${self}/modules/nvidia.nix"
+    "${self}/modules/niri.nix"
+    "${self}/modules/hyprland.nix"
+    "${self}/modules/audio.nix"
+    "${self}/modules/networking.nix"
+    "${self}/modules/browser.nix"
+    "${self}/modules/laptop.nix"
+    "${self}/modules/print.nix"
+    "${self}/modules/dev.nix"
+    "${self}/modules/ld.nix"
+    "${self}/modules/nvim.nix"
+    "${self}/modules/python.nix"
+    "${self}/modules/optimization.nix"
+    "${self}/modules/fonts.nix"
   ];
   nix.settings.experimental-features = [
     "nix-command"
