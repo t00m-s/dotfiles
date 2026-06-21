@@ -39,7 +39,7 @@
   services.scx = {
     enable = true;
     package = pkgs.scx.rustscheds;
-    sheduler = "scx_bpfland";
+    scheduler = "scx_bpfland";
     extraArgs = [ ];
   };
 }
