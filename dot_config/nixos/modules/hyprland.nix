@@ -9,5 +9,9 @@
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
     AQ_DRM_DEVICES = "/dev/dri/amd-igpu:/dev/dri/nvidia-dgpu";
   };
-  environment.systemPackages = with pkgs; [bibata-cursors];
+  environment.systemPackages = with pkgs; [
+    bibata-cursors
+    grim
+    slurp
+  ];
 }

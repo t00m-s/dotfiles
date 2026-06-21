@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   nix.optimise.automatic = true;
   nix.gc = {
@@ -34,4 +34,12 @@
       });
     })
   ];
+
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-bore-lto-zen4;
+  services.scx = {
+    enable = true;
+    package = pkgs.scx.rustscheds;
+    sheduler = "scx_bpfland";
+    extraArgs = [ ];
+  };
 }

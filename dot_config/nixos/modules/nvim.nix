@@ -8,6 +8,8 @@
     ruff
     basedpyright
     nil
+    clang-tools
+    rustup
   ];
 
   programs.neovim = {

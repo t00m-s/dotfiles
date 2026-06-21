@@ -1,5 +1,6 @@
 {
   self,
+  inputs,
   ...
 }:
 
@@ -26,7 +27,9 @@
     "${self}/modules/optimization.nix"
     "${self}/modules/fonts.nix"
     "${self}/modules/keyring.nix"
+    "${self}/modules/vpn.nix"
   ];
+  nixpkgs.overlays = import "${self}/overlays/cachyos-kernel.nix" inputs;
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
