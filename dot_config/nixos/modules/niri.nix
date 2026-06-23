@@ -1,4 +1,9 @@
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   # 1. Window Manager
@@ -13,7 +18,6 @@
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
   };
   security.polkit.enable = true; # polkit
-  services.gnome.gnome-keyring.enable = true; # secret service
   services.displayManager.sddm = {
     theme = "sddm-astronaut-theme";
     extraPackages = [ pkgs.sddm-astronaut ];
@@ -38,6 +42,10 @@
       xdg-desktop-portal-gtk # Added for fallback UI elements
       xdg-desktop-portal-wlr
     ];
-    config.common.default = [ "gnome" "gtk" "wlr" ];
+    config.common.default = [
+      "gnome"
+      "gtk"
+      "wlr"
+    ];
   };
 }

@@ -13,7 +13,6 @@
     "${self}/modules/i18n.nix"
     "${self}/modules/gaming.nix"
     "${self}/modules/nvidia.nix"
-    "${self}/modules/niri.nix"
     "${self}/modules/hyprland.nix"
     "${self}/modules/audio.nix"
     "${self}/modules/networking.nix"
