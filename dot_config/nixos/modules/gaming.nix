@@ -14,6 +14,7 @@
   environment.systemPackages = with pkgs; [
     gamescope-wsi # HDR won't work without this
     protonup-ng
+    prismlauncher # Minecraft
   ];
 
   environment.sessionVariables = {
@@ -26,4 +27,5 @@
     # Bluetooth
     ATTRS{name}=="Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
   '';
+
 }
