@@ -23,17 +23,17 @@
 
   hardware.cpu.amd.updateMicrocode = true;
   hardware.enableRedistributableFirmware = true;
-  nixpkgs.overlays = [
-    (final: prev: {
-      # We intercept the default mkDerivation layout
-      stdenv = prev.stdenv.override (old: {
-        extraAttrs = (old.extraAttrs or { }) // {
-          # Inject Zen 4 flags directly into the compiler environment
-          NIX_CFLAGS_COMPILE = (old.extraAttrs.NIX_CFLAGS_COMPILE or "") + " -march=znver4 -mtune=znver4 -O3";
-        };
-      });
-    })
-  ];
+  # nixpkgs.overlays = [
+  #   (final: prev: {
+  #     # We intercept the default mkDerivation layout
+  #     stdenv = prev.stdenv.override (old: {
+  #       extraAttrs = (old.extraAttrs or { }) // {
+  #         # Inject Zen 4 flags directly into the compiler environment
+  #         NIX_CFLAGS_COMPILE = (old.extraAttrs.NIX_CFLAGS_COMPILE or "") + " -march=znver4 -mtune=znver4 -O3";
+  #       };
+  #     });
+  #   })
+  # ];
 
   boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-bore-lto-zen4;
   services.scx = {

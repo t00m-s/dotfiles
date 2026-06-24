@@ -1,10 +1,9 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   powerManagement.enable = true;
   services.auto-cpufreq.enable = true;
   services.upower.enable = true;
-
 
   # --- OMEN Fan Control Systemd Service & Prerequisites ---
 
