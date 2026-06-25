@@ -3,7 +3,7 @@
 
   services.displayManager.sddm = {
     enable = true;
-    theme = "catppuccin-mocha-mauve";
+    theme = "catppuccin-frappe-mauve";
     package = pkgs.kdePackages.sddm;
     wayland.enable = true;
   };

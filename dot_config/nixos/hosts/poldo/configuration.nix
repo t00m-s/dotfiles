@@ -29,12 +29,15 @@
     "${self}/modules/vpn.nix"
   ];
   nixpkgs.overlays = import "${self}/overlays/cachyos-kernel.nix" inputs;
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
 
   nixpkgs.config.allowUnfree = true;
-
+  nix.settings = {
+    builders-use-substitutes = true;
+    always-allow-substitutes = true;
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+  };
   system.stateVersion = "26.05";
 }
