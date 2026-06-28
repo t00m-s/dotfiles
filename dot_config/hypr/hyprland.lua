@@ -21,6 +21,7 @@ hl.on('hyprland.start', function()
   hl.exec_cmd(bar)
   hl.exec_cmd 'hyprpaper'
   hl.exec_cmd 'hypridle'
+  hl.exec_cmd 'hyprctl setcursor Bibata-Modern-Classic 24'
 end)
 
 -------------------------------
