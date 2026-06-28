@@ -11,3 +11,5 @@ abbr -a dps 'docker ps --format "{{.id}}  {{.names}}"'
 abbr -a rm 'rm -i'
 abbr -a vi nvim
 abbr -a ff fastfetch
+abbr -a rbs "sudo nixos-rebuild switch"
+abbr -a upgrade "nix flake update;sudo nixos-rebuild switch; sudo nix-collect-garbage;"
