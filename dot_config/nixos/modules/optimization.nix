@@ -24,7 +24,6 @@
   hardware.cpu.amd.updateMicrocode = true;
   hardware.enableRedistributableFirmware = true;
 
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-bore-lto-zen4;
   services.scx = {
     enable = true;
     package = pkgs.scx.rustscheds;

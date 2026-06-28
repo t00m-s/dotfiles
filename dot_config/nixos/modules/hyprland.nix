@@ -1,12 +1,5 @@
 { inputs, pkgs, ... }:
 {
-
-  services.displayManager.sddm = {
-    enable = true;
-    theme = "catppuccin-frappe-mauve";
-    package = pkgs.kdePackages.sddm;
-    wayland.enable = true;
-  };
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -37,15 +30,5 @@
     bibata-cursors
     grim
     slurp
-    (pkgs.catppuccin-sddm.override {
-      flavor = "frappe";
-      accent = "mauve";
-      clockEnabled = true;
-      userIcon = true;
-      # font = "Noto Sans";
-      # fontSize = "9";
-      # background = "${./wallpaper.png}";
-      # loginBackground = true;
-    })
   ];
 }

@@ -33,6 +33,7 @@ require('conform').setup {
     sh = { 'shfmt' },
     go = { 'gofmt' },
     rust = { 'rustfmt' },
+    nix = { 'nixfmt' },
   },
   format_on_save = {
     timeout_ms = 500,
@@ -72,6 +73,7 @@ vim.lsp.enable {
   'clangd',
   'rust_analyzer',
   'jdtls',
+  'nil_ls',
 }
 
 vim.diagnostic.config {

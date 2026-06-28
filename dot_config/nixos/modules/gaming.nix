@@ -7,6 +7,7 @@
     dedicatedServer.openFirewall = true; # Open ports for Source Dedicated Server hosting
     gamescopeSession.enable = true;
   };
+
   programs.gamemode = {
     enable = true;
   };
