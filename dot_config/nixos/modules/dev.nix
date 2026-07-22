@@ -11,10 +11,6 @@
     htop
     fish
     chezmoi
-    (pkgs.btop.override {
-      cudaSupport = true;
-      rocmSupport = true;
-    })
     vim
     nixfmt
     wget

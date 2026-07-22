@@ -8,7 +8,7 @@ vim.pack.add {
 vim.cmd [[colorscheme tokyonight]]
 
 require('mini.icons').setup {}
-require('vim._core.ui2').enable {}
+-- require('vim._core.ui2').enable {}
 
 local cmp = {} -- statusline components
 

@@ -25,7 +25,6 @@
   hardware.nvidia = {
     modesetting.enable = true;
 
-    # Power management (experimental, can cause sleep/suspend stabilization issues)
     powerManagement.enable = true;
     powerManagement.finegrained = true;
 
@@ -43,40 +42,20 @@
     };
   };
   # Boot related stuff for nvidia gpus
-  boot.kernelParams = [ "nvidia.NVreg_TemporaryFilePath=/var/tmp" ];
+  boot.kernelParams = [
+    "nvidia.NVreg_TemporaryFilePath=/var/tmp"
+    "mem_sleep_default=deep"
+  ];
   boot.blacklistedKernelModules = [ "nouveau" ];
   environment.systemPackages = with pkgs; [
     nvtopPackages.nvidia
     vulkan-tools
     libva-utils
+    (pkgs.btop.override {
+      cudaSupport = true;
+      rocmSupport = true;
+    })
   ];
-  environment.etc."nvidia/nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json" =
-    {
-      text = ''
-        {
-          "rules": [
-            {
-              "pattern": {
-                "feature": "procname",
-                "matches": "niri"
-              },
-              "profile": "Limit Free Buffer Pool On Wayland Compositors"
-            }
-          ],
-          "profiles": [
-            {
-              "name": "Limit Free Buffer Pool On Wayland Compositors",
-              "settings": [
-                {
-                  "key": "GLVidHeapReuseRatio",
-                  "value": 0
-                }
-              ]
-            }
-          ]
-        }
-      '';
-    };
   services.udev.extraRules = ''
     KERNEL=="card*", KERNELS=="0000:06:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/amd-igpu"
     KERNEL=="card*", KERNELS=="0000:01:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/nvidia-dgpu"

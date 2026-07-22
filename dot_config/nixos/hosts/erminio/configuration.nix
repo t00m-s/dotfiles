@@ -6,31 +6,19 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/boot.nix
-    ../../modules/bluetooth.nix
-    ../../modules/useful.nix
     ../../modules/user.nix
+    ../../modules/dev.nix
     ../../modules/i18n.nix
-    ../../modules/gaming.nix
-    ../../modules/nvidia.nix
-    ../../modules/sddm.nix
-    ../../modules/hyprland.nix
-    ../../modules/audio.nix
     ../../modules/networking.nix
-    ../../modules/browser.nix
-    ../../modules/laptop.nix
-    ../../modules/print.nix
     ../../modules/dev.nix
     ../../modules/ld.nix
     ../../modules/nvim.nix
-    ../../modules/python.nix
-    ../../modules/optimization.nix
     ../../modules/fonts.nix
-    ../../modules/keyring.nix
     ../../modules/vpn.nix
     ../../modules/docker.nix
   ];
 
-  networking.hostName = "poldo";
+  networking.hostName = "erminio";
   nixpkgs.config.allowUnfree = true;
   nix.settings = {
     builders-use-substitutes = true;
@@ -40,8 +28,5 @@
       "flakes"
     ];
   };
-  nixpkgs.config.permittedInsecurePackages = [
-    "pnpm-10.29.2"
-  ];
   system.stateVersion = "26.05";
 }

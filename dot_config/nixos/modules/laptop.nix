@@ -4,13 +4,37 @@
   powerManagement.enable = true;
   services.auto-cpufreq.enable = true;
   services.upower.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        ControllerMode = "bredr"; # Fix frequent Bluetooth audio dropouts
+        # Shows battery charge of connected devices on supported
+        # Bluetooth adapters. Defaults to 'false'.
+        Experimental = true;
+        # When enabled other devices can connect faster to us, however
+        # the tradeoff is increased power consumption. Defaults to
+        # 'false'.
+        FastConnectable = true;
+      };
+      Policy = {
+        # Enable all controllers when they are found. This includes
+        # adapters present on start as well as adapters that are plugged
+        # in later on. Defaults to 'true'.
+        AutoEnable = true;
+      };
+    };
+  };
 
   boot.kernelModules = [ "ec_sys" ];
   boot.extraModprobeConfig = ''
-    options ec_sys write_support=1
+    options ec_sys write_support=1 
   '';
 
-  environment.systemPackages = [ pkgs.uv ];
+  environment.systemPackages = with pkgs; [
+    uv
+  ];
 
   systemd.services.omen-fan = {
     description = "HP Omen Fan Control Daemon (Python via uv)";
@@ -27,4 +51,8 @@
       User = "root";
     };
   };
+  # services.udev.extraRules = ''
+  #   KERNEL=="ec0", SUBSYSTEM=="ec", RUN+="${pkgs.bash}/bin/bash -c 'echo -n -e \\x31 | ${pkgs.coreutils}/bin/dd of=/sys/kernel/debug/ec/ec0/io bs=1 seek=149 count=1 conv=notrunc'"
+  # '';
+
 }
