@@ -25,6 +25,13 @@
             ./hosts/poldo/configuration.nix
           ];
         };
+        erminio = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit self inputs; };
+          modules = [
+            ./hosts/erminio/configuration.nix
+          ];
+        };
       };
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
     };

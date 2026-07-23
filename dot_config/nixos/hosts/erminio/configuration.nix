@@ -28,5 +28,8 @@
       "flakes"
     ];
   };
+
+  networking.firewall.allowedTCPPorts = [ 5201 ];
+  networking.firewall.allowedUDPPorts = [ 1194 ];
   system.stateVersion = "26.05";
 }
