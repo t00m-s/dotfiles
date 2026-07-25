@@ -4,38 +4,52 @@ set -euo pipefail
 # 1. System Localization & Hostname
 echo "poldo" > /etc/hostname
 ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime
-echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-echo "it_IT.UTF-8 UTF-8" >> /etc/locale.gen
+cat << 'EOF' > /etc/locale.conf
+en_US.UTF-8 UTF-8
+it_IT.UTF-8 UTF-8
+EOF
 locale-gen
-echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "KEYMAP=us-acentos" > /etc/vconsole.conf
-
+cat << 'EOF' > /etc/locale.conf
+LANG=en_US.UTF-8
+LC_ADDRESS=it_IT.UTF-8
+LC_IDENTIFICATION=it_IT.UTF-8
+LC_MEASUREMENT=it_IT.UTF-8
+LC_MONETARY=it_IT.UTF-8
+LC_NAME=it_IT.UTF-8
+LC_NUMERIC=it_IT.UTF-8
+LC_PAPER=it_IT.UTF-8
+LC_TELEPHONE=it_IT.UTF-8
+LC_TIME=it_IT.UTF-8
+EOF
 # 2. Hardware & Kernel Module Options
 mkdir -p /etc/modprobe.d
 echo "options ec_sys write_support=1" > /etc/modprobe.d/ec_sys.conf
 echo "blacklist nouveau" > /etc/modprobe.d/nouveau.conf
 
-# 3. User Setup (Tommaso)
-id -u tommaso &>/dev/null || useradd -m -s /usr/bin/fish tommaso
-usermod -aG wheel,networkmanager,docker,video,audio,scanner,lp,gamemode tommaso
-
-# 4. Pacman Core Package Installation
+# 3. Pacman Core Package Installation
 pacman -S --needed --noconfirm \
-  linux linux-headers limine amd-ucode \
-  nvidia-dkms nvidia-utils lib32-nvidia-utils nvtop vulkan-tools libva-utils btop \
-  hyprland greetd greetd-tuigreet gnome-keyring seahorse \
-  pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber rtkit \
+  base base-devel linux linux-headers limine amd-ucode \
+  nvidia-dkms nvidia-utils lib32-nvidia-utils nvtop vulkan-tools libva-utils btop rocm-smi-lib \
+  hyprland xdg-desktop-portal-hyprland hyprpolkitagent greetd greetd-tuigreet gnome-keyring \
+  seahorse fuzzel swaync qt5-wayland qt6-wayland grim slurp hyprpaper xdg-user-dirs \
+  swappy wl-clipboard otf-font-awesome \
+  pipewire pavucontrol pipewire-alsa pipewire-pulse pipewire-jack wireplumber rtkit \
   bluez bluez-utils blueman \
   docker docker-compose \
-  auto-cpufreq upower uv openssh networkmanager wireguard-tools \
-  steam gamemode gamescope protonup-ng prismlauncher wine-staging winetricks \
-  neovim tree-sitter lua-language-server stylua ruff pyright clang rustup \
+  upower uv openssh networkmanager wireguard-tools \
+  steam gamemode gamescope \
+  neovim tree-sitter tree-sitter-cli lua-language-server stylua ruff pyright clang rustup \
   eza lazygit lazydocker fzf ripgrep bat htop fish chezmoi vim wget git gcc \
   starship zoxide tmux git-delta fastfetch unzip cmake pkg-config \
   ttf-firacode-nerd ttf-jetbrains-mono-nerd noto-fonts noto-fonts-emoji \
   cups sane sane-airscan avahi nss-mdns \
-  obsidian signal-desktop telegram-desktop nautilus gvfs udisks2 yazi 7zip \
-  python-dbus spotify-launcher darkman scx-scheds
+  obsidian signal-desktop telegram-desktop nautilus gvfs udisks2 yazi 7zip ghostty \
+  python-dbus python-click python-click-alias python-tomlkit spotify-launcher darkman scx-scheds scx-tools\
+
+# 4. User Setup (Tommaso)
+id -u tommaso &>/dev/null || useradd -m -s /usr/bin/fish tommaso
+usermod -aG wheel,docker,video,audio,scanner,lp,gamemode tommaso
 
 # 5. Font Configuration
 cat << 'EOF' > /etc/fonts/local.conf
@@ -83,6 +97,8 @@ cat << 'EOF' > /etc/greetd/config.toml
 [default_session]
 command = "tuigreet --time --remember --remember-session --sessions /usr/share/wayland-sessions"
 user = "greeter"
+[terminal]
+vt = 1
 EOF
 
 # 8. Docker & Hardened SSH Setup
@@ -131,6 +147,7 @@ User=root
 WantedBy=multi-user.target
 EOF
 
+mkdir -p /etc/omen-fan/
 cat << 'EOF' > /etc/omen-fan/config.toml
 [service]
 TEMP_CURVE = [51, 60, 70, 80, 90]
@@ -141,25 +158,26 @@ POLL_INTERVAL = 1
 [script]
 BYPASS_DEVICE_CHECK = 1
 EOF
-# 11. Systemd Services Enablement
-systemctl daemon-reload
-systemctl enable NetworkManager bluetooth docker greetd auto-cpufreq upower sshd omen-fan cups avahi-daemon udisks2
 
-# 12. AUR Packages Installation
+# 11. AUR Packages Installation
 pacman -S --needed base-devel
 git clone https://aur.archlinux.org/paru.git /tmp/paru
 cd /tmp/paru
 makepkg -si
 
-AUR_PKGS=(zen-browser-bin ttf-twemoji vesktop-bin epson-inkjet-printer-escpr epson-inkjet-printer-escpr2)
+AUR_PKGS=(zen-browser-bin ttf-twemoji vesktop-bin epson-inkjet-printer-escpr epson-inkjet-printer-escpr2 bibata-cursor-theme-bin)
 if command -v paru &> /dev/null; then
     paru -S --needed --noconfirm "${AUR_PKGS[@]}"
 fi
 
-systemctl enable --now scx || true
+# 12. Systemd Services Enablement
+systemctl daemon-reload
+systemctl enable scx NetworkManager bluetooth docker greetd upower sshd omen-fan cups auto-cpufreq nvidia-powerd avahi-daemon udisks2
 
 # 13. QoL
-git config --system core.pager "delta"
-git config --system interactive.diffFilter "delta --color-only"
-git config --system delta.navigate true
-git config --system merge.conflictstyle zdiff3
+git config --global core.pager "delta"
+git config --global interactive.diffFilter "delta --color-only"
+git config --global delta.navigate true
+git config --global merge.conflictstyle zdiff3
+git config --global user.name "Tommaso Soncin"
+git config --global user.email "soncintommaso@gmail.com"
