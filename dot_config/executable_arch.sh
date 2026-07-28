@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
+if ! [ $(id -u) = 0 ]; then
+   echo "This script must NOT be run as root."
+   exit 1
+fi
 
 # 1. System Localization & Hostname
-echo "poldo" > /etc/hostname
-ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime
-cat << 'EOF' > /etc/locale.conf
+echo "poldo" | sudo tee /etc/hostname
+sudo ln -sf /usr/share/zoneinfo/Europe/Rome /etc/localtime
+cat | sudo tee /etc/locale.conf <<EOF
 en_US.UTF-8 UTF-8
 it_IT.UTF-8 UTF-8
 EOF
 locale-gen
-echo "KEYMAP=us-acentos" > /etc/vconsole.conf
-cat << 'EOF' > /etc/locale.conf
+echo "KEYMAP=us-acentos" | sudo tee /etc/vconsole.conf
+cat | sudo tee /etc/locale.conf<<EOF
 LANG=en_US.UTF-8
 LC_ADDRESS=it_IT.UTF-8
 LC_IDENTIFICATION=it_IT.UTF-8
@@ -22,13 +26,15 @@ LC_PAPER=it_IT.UTF-8
 LC_TELEPHONE=it_IT.UTF-8
 LC_TIME=it_IT.UTF-8
 EOF
-# 2. Hardware & Kernel Module Options
-mkdir -p /etc/modprobe.d
-echo "options ec_sys write_support=1" > /etc/modprobe.d/ec_sys.conf
-echo "blacklist nouveau" > /etc/modprobe.d/nouveau.conf
+# 2. Module Options
+sudo mkdir -p /etc/modprobe.d
+sudo mkdir -p /etc/modules-load.d/
+echo "ec_sys" | sudo tee /etc/modules-load.d/ec_sys.conf
+echo "options ec_sys write_support=1" | sudo tee /etc/modprobe.d/ec_sys.conf
+echo "blacklist nouveau" | sudo tee /etc/modprobe.d/nouveau.conf
 
-# 3. Pacman Core Package Installation
-pacman -S --needed --noconfirm \
+# 3. Pacman
+sudo pacman -S --needed --noconfirm \
   base base-devel linux linux-headers limine amd-ucode \
   nvidia-dkms nvidia-utils lib32-nvidia-utils nvtop vulkan-tools libva-utils btop rocm-smi-lib \
   hyprland xdg-desktop-portal-hyprland hyprpolkitagent greetd greetd-tuigreet gnome-keyring \
@@ -52,7 +58,7 @@ id -u tommaso &>/dev/null || useradd -m -s /usr/bin/fish tommaso
 usermod -aG wheel,docker,video,audio,scanner,lp,gamemode tommaso
 
 # 5. Font Configuration
-cat << 'EOF' > /etc/fonts/local.conf
+cat | sudo tee /etc/fonts/local.conf<<EOF
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 <fontconfig>
@@ -83,7 +89,7 @@ EOF
 fc-cache -fv
 
 # 6. Bluetooth Tweaks
-cat << 'EOF' > /etc/bluetooth/main.conf
+cat | sudo tee /etc/bluetooth/main.conf<<EOF
 [General]
 ControllerMode = bredr
 Experimental = true
@@ -93,7 +99,7 @@ AutoEnable = true
 EOF
 
 # 7. Display Manager (Greetd + Tuigreet)
-cat << 'EOF' > /etc/greetd/config.toml
+cat | sudo tee /etc/greetd/config.toml<<EOF
 [default_session]
 command = "tuigreet --time --remember --remember-session --sessions /usr/share/wayland-sessions"
 user = "greeter"
@@ -103,7 +109,7 @@ EOF
 
 # 8. Docker & Hardened SSH Setup
 mkdir -p /etc/docker /etc/ssh/sshd_config.d
-cat << 'EOF' > /etc/docker/daemon.json
+cat | sudo tee /etc/docker/daemon.json<<EOF
 {
   "dns": ["1.1.1.1", "8.8.8.8"],
   "experimental": true,
@@ -111,7 +117,7 @@ cat << 'EOF' > /etc/docker/daemon.json
 }
 EOF
 
-cat << 'EOF' > /etc/ssh/sshd_config.d/hardened.conf
+cat | sudo tee /etc/ssh/sshd_config.d/hardened.conf<<EOF
 PasswordAuthentication no
 KbdInteractiveAuthentication no
 PermitRootLogin no
@@ -119,18 +125,18 @@ MaxAuthTries 3
 EOF
 
 # 9. Udev Rules (DS4 & GPU DRI Symlinks)
-cat << 'EOF' > /etc/udev/rules.d/99-ds4-touchpad.rules
+cat | sudo tee /etc/udev/rules.d/99-ds4-touchpad.rules<<EOF
 ATTRS{name}=="Sony Interactive Entertainment Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
 ATTRS{name}=="Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
 EOF
 
-cat << 'EOF' > /etc/udev/rules.d/99-gpu-dri.rules
+cat | sudo tee /etc/udev/rules.d/99-gpu-dri.rules<<EOF
 KERNEL=="card*", KERNELS=="0000:06:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/amd-igpu"
 KERNEL=="card*", KERNELS=="0000:01:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/nvidia-dgpu"
 EOF
 
 # 10. HP Omen Fan Control Service
-cat << 'EOF' > /etc/systemd/system/omen-fan.service
+cat | sudo tee /etc/systemd/system/omen-fan.service<<EOF
 [Unit]
 Description=HP Omen Fan Control Daemon
 After=multi-user.target
@@ -148,7 +154,7 @@ WantedBy=multi-user.target
 EOF
 
 mkdir -p /etc/omen-fan/
-cat << 'EOF' > /etc/omen-fan/config.toml
+cat | sudo tee /etc/omen-fan/config.toml<<EOF
 [service]
 TEMP_CURVE = [51, 60, 70, 80, 90]
 SPEED_CURVE = [0, 30, 40, 70, 100]
@@ -159,8 +165,14 @@ POLL_INTERVAL = 1
 BYPASS_DEVICE_CHECK = 1
 EOF
 
+# Lid handling laptop
+cat | sudo tee /etc/systemd/logind.conf<<EOF
+HandleLidSwitch=suspend
+HandleLidSwitchExternalPower=ignore
+HandleLidSwitchDocked=ignore
+EOF
 # 11. AUR Packages Installation
-pacman -S --needed base-devel
+sudo pacman -S --needed base-devel
 git clone https://aur.archlinux.org/paru.git /tmp/paru
 cd /tmp/paru
 makepkg -si
@@ -175,9 +187,7 @@ systemctl daemon-reload
 systemctl enable scx NetworkManager bluetooth docker greetd upower sshd omen-fan cups auto-cpufreq nvidia-powerd avahi-daemon udisks2
 
 # 13. QoL
-git config --global core.pager "delta"
-git config --global interactive.diffFilter "delta --color-only"
-git config --global delta.navigate true
-git config --global merge.conflictstyle zdiff3
-git config --global user.name "Tommaso Soncin"
-git config --global user.email "soncintommaso@gmail.com"
+git config --system core.pager "delta"
+git config --system interactive.diffFilter "delta --color-only"
+git config --system delta.navigate true
+git config --system merge.conflictstyle zdiff3
