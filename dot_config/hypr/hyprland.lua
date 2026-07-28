@@ -10,8 +10,8 @@ require 'monitors'
 local terminal = 'GTK_IM_MODULE=simple ghostty'
 local fileManager = terminal .. ' -e yazi'
 local menu = 'fuzzel'
-local browser = 'zen'
-local bar = 'noctalia'
+local browser = 'zen-browser'
+local bar = 'waybar'
 
 -------------------
 ---- AUTOSTART ----
@@ -19,6 +19,7 @@ local bar = 'noctalia'
 hl.on('hyprland.start', function()
   hl.exec_cmd 'dbus-update-activation-environment --systemd --all'
   hl.exec_cmd(bar)
+  hl.exec_cmd 'systemctl --user start hyprpolkitagent'
   hl.exec_cmd 'hyprpaper'
   hl.exec_cmd 'hypridle'
   hl.exec_cmd 'hyprctl setcursor Bibata-Modern-Classic 24'
@@ -105,6 +106,7 @@ hl.bind(
 hl.bind(mainMod .. ' + E', hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. ' + V', hl.dsp.window.float { action = 'toggle' })
 hl.bind(mainMod .. ' + SPACE', hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. ' + B', hl.dsp.exec_cmd 'pkill waybar || waybar')
 hl.bind(mainMod .. ' + P', hl.dsp.window.pseudo())
 hl.bind('F11', hl.dsp.window.fullscreen { action = 'toggle' })
 
@@ -185,7 +187,7 @@ hl.bind('XF86AudioNext', hl.dsp.exec_cmd 'playerctl next', { locked = true })
 hl.bind('XF86AudioPause', hl.dsp.exec_cmd 'playerctl play-pause', { locked = true })
 hl.bind('XF86AudioPlay', hl.dsp.exec_cmd 'playerctl play-pause', { locked = true })
 hl.bind('XF86AudioPrev', hl.dsp.exec_cmd 'playerctl previous', { locked = true })
-hl.bind('Print', hl.dsp.exec_cmd 'grim -g "$(slurp)"')
+hl.bind('Print', hl.dsp.exec_cmd 'grim -g "$(slurp)" - | swappy -f -')
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
 --------------------------------
