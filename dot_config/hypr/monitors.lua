@@ -22,20 +22,20 @@ local aocMonitor = {
 hl.monitor(laptopMonitor)
 hl.monitor(asusMonitor)
 hl.monitor(aocMonitor)
-
-local function disableLaptopMonitor()
-  hl.monitor {
-    output = laptopMonitor.output,
-    disabled = true,
-  }
-end
-
-local function enableLaptopMonitor()
-  hl.monitor(laptopMonitor)
-  os.execute 'hyprctl reload'
-end
+-- Plugging in random monitors (e.g. university)
+hl.monitor { output = '', mode = 'preferred', position = 'auto', scale = 1 }
 
 -- close lid
-hl.bind('switch:on:Lid Switch', disableLaptopMonitor, { locked = true })
+hl.bind(
+  'switch:on:Lid Switch',
+  hl.dsp.exec_cmd '/home/tommaso/.config/hypr/scripts/clamshell.sh close',
+  { locked = true }
+)
 -- open lid
-hl.bind('switch:off:Lid Switch', enableLaptopMonitor, { locked = true })
+hl.bind(
+  'switch:off:Lid Switch',
+  hl.dsp.exec_cmd '/home/tommaso/.config/hypr/scripts/clamshell.sh open',
+  { locked = true }
+)
+
+hl.exec_cmd '/home/tommaso/.config/hypr/scripts/clamshell.sh check'
