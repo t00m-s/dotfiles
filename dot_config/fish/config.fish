@@ -16,3 +16,6 @@ end
 fzf --fish | source
 zoxide init fish | source
 starship init fish | source
+
+# uv
+fish_add_path "/home/tommaso/.local/bin"
