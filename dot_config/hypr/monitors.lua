@@ -1,30 +1,36 @@
 local laptopMonitor = {
   output = 'eDP-1',
-  mode = '1920x1200@144',
+  mode = '1920x1200@144.0',
   position = '0x0',
-  scale = '1.25',
+  scale = 1.25,
+  vrr = 0,
 }
-
-local asusMonitor = {
-  output = 'HDMI-A-1',
-  mode = '1920x1080@240',
-  position = 'auto',
-  scale = 'auto',
-}
-
 local aocMonitor = {
   output = 'DP-1',
-  mode = 'highrr',
-  position = 'auto-right',
-  scale = 'auto',
+  mode = '1920x1080@144.0',
+  position = '3456x0',
+  scale = 1,
+  vrr = 0,
 }
-
+-- local asusTop = {
+--   output = 'HDMI-A-1',
+--   mode = '1920x1080@240.0',
+--   position = '-192x-1080',
+--   scale = 1.0,
+--   vrr = 0,
+-- }
+local asusMonitor = {
+  output = 'HDMI-A-1',
+  mode = '1920x1080@240.0',
+  position = '1536x0',
+  scale = 1.0,
+  vrr = 0,
+}
+hl.monitor { output = '', mode = 'preferred', position = 'auto', scale = 1 }
 hl.monitor(laptopMonitor)
 hl.monitor(asusMonitor)
-hl.monitor(aocMonitor)
--- Plugging in random monitors (e.g. university)
-hl.monitor { output = '', mode = 'preferred', position = 'auto', scale = 1 }
-
+-- hl.monitor(asusTop)
+-- hl.monitor(aocMonitor)
 -- close lid
 hl.bind(
   'switch:on:Lid Switch',

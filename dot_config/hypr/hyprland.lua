@@ -23,6 +23,7 @@ hl.on('hyprland.start', function()
   hl.exec_cmd 'hyprpaper'
   hl.exec_cmd 'hypridle'
   hl.exec_cmd 'hyprctl setcursor Bibata-Modern-Classic 24'
+  hl.exec_cmd 'cursor-clip --daemon'
 end)
 
 -------------------------------
@@ -66,10 +67,10 @@ hl.config {
 
 hl.config {
   input = {
-    kb_layout = 'us',
-    kb_variant = 'intl',
+    kb_layout = 'us, us',
+    kb_variant = ',intl',
     kb_model = '',
-    kb_options = '',
+    kb_options = 'grp:win_space_toggle',
     kb_rules = '',
 
     numlock_by_default = true,
@@ -104,12 +105,13 @@ hl.bind(
   hl.dsp.exec_cmd "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"
 )
 hl.bind(mainMod .. ' + E', hl.dsp.exec_cmd(fileManager))
+hl.bind('XF86Launch2', hl.dsp.exec_cmd 'hyprlock')
+hl.bind('XF86Calculator', hl.dsp.exec_cmd 'galculator')
 hl.bind(mainMod .. ' + V', hl.dsp.window.float { action = 'toggle' })
 hl.bind(mainMod .. ' + SPACE', hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. ' + B', hl.dsp.exec_cmd 'pkill waybar || waybar')
+hl.bind(mainMod .. ' + B', hl.dsp.exec_cmd 'pkill -USR1 waybar')
 hl.bind(mainMod .. ' + P', hl.dsp.window.pseudo())
 hl.bind('F11', hl.dsp.window.fullscreen { action = 'toggle' })
-
 hl.bind(mainMod .. ' + H', hl.dsp.focus { direction = 'left' })
 hl.bind(mainMod .. ' + L', hl.dsp.focus { direction = 'right' })
 hl.bind(mainMod .. ' + K', hl.dsp.focus { direction = 'up' })
@@ -187,7 +189,10 @@ hl.bind('XF86AudioNext', hl.dsp.exec_cmd 'playerctl next', { locked = true })
 hl.bind('XF86AudioPause', hl.dsp.exec_cmd 'playerctl play-pause', { locked = true })
 hl.bind('XF86AudioPlay', hl.dsp.exec_cmd 'playerctl play-pause', { locked = true })
 hl.bind('XF86AudioPrev', hl.dsp.exec_cmd 'playerctl previous', { locked = true })
-hl.bind('Print', hl.dsp.exec_cmd 'grim -g "$(slurp)" - | swappy -f -')
+hl.bind(
+  'Print',
+  hl.dsp.exec_cmd 'grim - | satty -f - --copy-command wl-copy -o "~/Pictures/Screenshots/%Y%m%d_%H%M%S.png"'
+)
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
 --------------------------------
