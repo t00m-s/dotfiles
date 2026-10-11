@@ -57,7 +57,7 @@ def memory_usage(text):
     }
 
 
-def temperature(kind, override="", hwmon=Path("/sys/class/hwmon")):
+def temperature(kind, override="", hwmon=Path("/sys/class/hwmon"), device_path=None):
     """Prefer CPU package/Tctl and GPU edge, not motherboard/SSD sensors."""
     accepted = {"cpu": {"coretemp", "k10temp", "zenpower", "cpu_thermal"},
                 "gpu": {"amdgpu", "nouveau", "i915", "xe", "nvidia"}}[kind]
@@ -65,6 +65,8 @@ def temperature(kind, override="", hwmon=Path("/sys/class/hwmon")):
     for device in sorted(hwmon.glob("hwmon*")):
         name = read(device / "name")
         if (override and name != override) or (not override and name not in accepted):
+            continue
+        if device_path is not None and (device / "device").resolve() != device_path.resolve():
             continue
         for sensor in sorted(device.glob("temp*_input")):
             try:
@@ -83,6 +85,48 @@ def temperature(kind, override="", hwmon=Path("/sys/class/hwmon")):
     # For multiple CPU packages, report the hottest preferred sensor.
     selected = max((item for item in candidates if item[0] == best_priority), key=lambda item: item[3])
     return round(selected[3], 1), selected[1] + (" / " + selected[2] if selected[2] else "")
+
+
+def connected_hdmi_gpu(drm=Path("/sys/class/drm")):
+    """Inspect cached connector state and map HDMI to its owning PCI GPU."""
+    for connector in sorted(drm.glob("card*-HDMI-*")):
+        if read(connector / "status") != "connected":
+            continue
+        card = drm / connector.name.split("-", 1)[0]
+        device = (card / "device").resolve()
+        vendor = read(device / "vendor")
+        if vendor in ("0x10de", "0x1002", "0x8086"):
+            return device, vendor
+    return None
+
+
+def nvidia_temperature(device=""):
+    command = ["nvidia-smi"] + (["-i", device] if device else [])
+    output = run(command + ["--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"])
+    values = [float(line) for line in output.splitlines() if re.fullmatch(r"\d+(\.\d+)?", line)]
+    return (max(values), "nvidia-smi") if values else (None, "")
+
+
+def gpu_temperature(override="", query_nvidia=False, follow_hdmi=False,
+                    hwmon=Path("/sys/class/hwmon"), drm=Path("/sys/class/drm")):
+    # Explicit sensor selection takes priority over HDMI auto-switching.
+    if follow_hdmi and not override:
+        connected = connected_hdmi_gpu(drm)
+        if connected:
+            device, vendor = connected
+            driver = {"0x10de": "nvidia", "0x1002": "amdgpu", "0x8086": "i915"}[vendor]
+            value, sensor = temperature("gpu", driver, hwmon, device_path=device)
+            if value is None and vendor == "0x10de":
+                # Address the HDMI GPU by PCI ID, never by unstable card numbers.
+                value, sensor = nvidia_temperature(device.name)
+            return value, (sensor or driver + " (unavailable)") + " / HDMI"
+        # This machine's integrated GPU is AMD. Do not inspect NVIDIA sensors or
+        # run nvidia-smi at all while HDMI is disconnected.
+        return temperature("gpu", "amdgpu", hwmon)
+    value, sensor = temperature("gpu", override, hwmon)
+    if value is None and query_nvidia:
+        return nvidia_temperature()
+    return value, sensor
 
 
 def default_interface(text):
@@ -197,15 +241,10 @@ class Monitor:
             result.update(memory_usage(read("/proc/meminfo")))
         except (ValueError, IndexError):
             result.update(memory=None, memoryUsedGiB=None, memoryTotalGiB=None)
-        for kind in ("cpu", "gpu"):
-            value, sensor = temperature(kind, getattr(self.args, kind + "_sensor"))
-            result[kind + "Temp"] = value
-            result[kind + "Sensor"] = sensor
-        if result["gpuTemp"] is None and self.args.nvidia:
-            output = run(["nvidia-smi", "--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"])
-            values = [float(line) for line in output.splitlines() if re.fullmatch(r"\d+(\.\d+)?", line)]
-            if values:
-                result.update(gpuTemp=max(values), gpuSensor="nvidia-smi")
+        result["cpuTemp"], result["cpuSensor"] = temperature("cpu", self.args.cpu_sensor)
+        result["gpuTemp"], result["gpuSensor"] = gpu_temperature(
+            self.args.gpu_sensor, self.args.nvidia, self.args.gpu_follow_hdmi,
+        )
         network, counters = network_info()
         now = time.monotonic()
         interface = network["networkInterface"]
@@ -261,6 +300,7 @@ def main():
     parser.add_argument("--gpu-sensor", default="")
     parser.add_argument("--device", default="")
     parser.add_argument("--nvidia", action="store_true")
+    parser.add_argument("--gpu-follow-hdmi", action="store_true")
     args = parser.parse_args()
     if args.action not in ("sample", "stream"):
         if args.action != "volume-mute" and args.value is None:

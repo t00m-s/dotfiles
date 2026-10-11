@@ -79,9 +79,23 @@ edge sensors take priority. Unavailable readings display `—`, rather than a
 misleading zero. To choose a particular driver, set `cpuSensor` or `gpuSensor`
 to its hwmon name, e.g. `k10temp` / `amdgpu`.
 
-NVIDIA querying is **off by default** to avoid waking a sleeping discrete GPU.
-Set `queryNvidia: true` to use `nvidia-smi` if no supported GPU hwmon sensor is
-available. Your AMD backlight is selected automatically; you can explicitly set
+`gpuFollowHdmi: true` (the default) switches the GPU temperature automatically:
+AMD normally; the GPU owning a **connected HDMI port** when plugged in. On this
+machine HDMI is wired to NVIDIA. The monitor checks DRM connector status at each
+sample, uses the corresponding GPU's hwmon sensor if available, otherwise queries
+that NVIDIA GPU by PCI ID with `nvidia-smi`. Unplugging immediately stops NVIDIA
+queries and switches back to AMD at the next sample. Missing HDMI GPU readings
+display `—`, not AMD's temperature mislabeled as NVIDIA. A nonempty `gpuSensor`
+is a manual override and disables automatic switching.
+
+HDMI connection is a useful gate on this machine, not a general GPU activity
+detector: NVIDIA can also run compute/rendering workloads without a display.
+This does not control GPU power or enable/disable displays. To use the original
+sensor-selection behavior, set `gpuFollowHdmi: false`; `queryNvidia: true` then
+allows NVIDIA querying when no GPU hwmon sensor is available (off by default
+because querying can wake a sleeping GPU).
+
+Your AMD backlight is selected automatically; you can explicitly set
 `backlightDevice: "amdgpu_bl1"`.
 
 Volume uses the default PipeWire output and caps changes at 100%. Brightness
@@ -93,7 +107,7 @@ Control and monitor readings refresh every two seconds by default.
 ## Checks / troubleshooting
 
 ```sh
-python3 ~/.config/bar/scripts/monitor.py sample
+python3 ~/.config/bar/scripts/monitor.py sample --gpu-follow-hdmi
 python3 -m unittest discover -s ~/.config/bar/tests -v
 ```
 

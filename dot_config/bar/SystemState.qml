@@ -43,7 +43,9 @@ Singleton {
         command: ["python3", "-u", Quickshell.shellPath("scripts/monitor.py"), "stream",
                   "--interval", String(Settings.pollSeconds),
                   "--cpu-sensor", Settings.cpuSensor, "--gpu-sensor", Settings.gpuSensor,
-                  "--device", Settings.backlightDevice].concat(Settings.queryNvidia ? ["--nvidia"] : [])
+                  "--device", Settings.backlightDevice]
+                  .concat(Settings.queryNvidia ? ["--nvidia"] : [])
+                  .concat(Settings.gpuFollowHdmi ? ["--gpu-follow-hdmi"] : [])
         running: true
         stdout: SplitParser {
             onRead: line => {

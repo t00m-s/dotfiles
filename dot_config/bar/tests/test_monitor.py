@@ -10,6 +10,78 @@ spec.loader.exec_module(monitor)
 
 
 class MonitorTests(unittest.TestCase):
+    def hdmi_fixture(self, directory, status="disconnected"):
+        base = Path(directory)
+        drm = base / "drm"
+        hwmon = base / "hwmon"
+        drm.mkdir()
+        hwmon.mkdir()
+        amd = base / "0000:06:00.0"
+        nvidia = base / "0000:01:00.0"
+        for device, vendor in ((amd, "0x1002"), (nvidia, "0x10de")):
+            device.mkdir()
+            (device / "vendor").write_text(vendor)
+        card = drm / "card9"
+        card.mkdir()
+        (card / "device").symlink_to(nvidia, target_is_directory=True)
+        connector = drm / "card9-HDMI-A-1"
+        connector.mkdir()
+        (connector / "status").write_text(status)
+        sensor = hwmon / "hwmon0"
+        sensor.mkdir()
+        (sensor / "name").write_text("amdgpu")
+        (sensor / "device").symlink_to(amd, target_is_directory=True)
+        (sensor / "temp1_input").write_text("45000")
+        (sensor / "temp1_label").write_text("edge")
+        return drm, hwmon, connector, nvidia
+
+    @patch.object(monitor, "run", return_value="70")
+    def test_hdmi_connect_and_unplug_switch_gpu(self, mocked):
+        with tempfile.TemporaryDirectory() as directory:
+            drm, hwmon, connector, nvidia = self.hdmi_fixture(directory)
+            self.assertEqual(monitor.gpu_temperature(follow_hdmi=True, hwmon=hwmon, drm=drm),
+                             (45, "amdgpu / edge"))
+            mocked.assert_not_called()
+            (connector / "status").write_text("connected")
+            self.assertEqual(monitor.gpu_temperature(follow_hdmi=True, hwmon=hwmon, drm=drm),
+                             (70, "nvidia-smi / HDMI"))
+            command = mocked.call_args.args[0]
+            self.assertEqual(command[:3], ["nvidia-smi", "-i", nvidia.name])
+            (connector / "status").write_text("disconnected")
+            self.assertEqual(monitor.gpu_temperature(follow_hdmi=True, hwmon=hwmon, drm=drm),
+                             (45, "amdgpu / edge"))
+            mocked.assert_called_once()
+
+    @patch.object(monitor, "run", return_value="")
+    def test_unavailable_hdmi_gpu_does_not_mislabel_amd(self, mocked):
+        with tempfile.TemporaryDirectory() as directory:
+            drm, hwmon, _, _ = self.hdmi_fixture(directory, "connected")
+            value, sensor = monitor.gpu_temperature(follow_hdmi=True, hwmon=hwmon, drm=drm)
+            self.assertIsNone(value)
+            self.assertEqual(sensor, "nvidia (unavailable) / HDMI")
+
+    @patch.object(monitor, "run")
+    def test_explicit_gpu_sensor_overrides_hdmi(self, mocked):
+        with tempfile.TemporaryDirectory() as directory:
+            drm, hwmon, _, _ = self.hdmi_fixture(directory, "connected")
+            self.assertEqual(monitor.gpu_temperature("amdgpu", follow_hdmi=True, hwmon=hwmon, drm=drm),
+                             (45, "amdgpu / edge"))
+            mocked.assert_not_called()
+
+    @patch.object(monitor, "run")
+    def test_hdmi_gpu_uses_hwmon_when_available(self, mocked):
+        with tempfile.TemporaryDirectory() as directory:
+            drm, hwmon, _, nvidia = self.hdmi_fixture(directory, "connected")
+            sensor = hwmon / "hwmon1"
+            sensor.mkdir()
+            (sensor / "name").write_text("nvidia")
+            (sensor / "device").symlink_to(nvidia, target_is_directory=True)
+            (sensor / "temp1_input").write_text("65000")
+            (sensor / "temp1_label").write_text("GPU")
+            self.assertEqual(monitor.gpu_temperature(follow_hdmi=True, hwmon=hwmon, drm=drm),
+                             (65, "nvidia / GPU / HDMI"))
+            mocked.assert_not_called()
+
     def test_cpu_does_not_double_count_guest(self):
         self.assertEqual(monitor.cpu_ticks("cpu 100 20 30 400 10 5 5 0 50 10"), (570, 410))
 
