@@ -3,8 +3,8 @@ return {
     settings = {
       lint = {
         ignore = {
-          'F403',
-          'F405',
+          -- 'F403',
+          -- 'F405',
         },
       },
     },

@@ -30,7 +30,7 @@ require('conform').setup {
     python = { 'ruff_fix', 'ruff_format', 'ruff_organize_imports' },
     c = { 'clang-format' },
     cpp = { 'clang-format' },
-    sh = { 'shfmt' },
+    sh = { 'shuck' },
     go = { 'gofmt' },
     rust = { 'rustfmt' },
     nix = { 'nixfmt' },
@@ -74,6 +74,7 @@ vim.lsp.enable {
   'rust_analyzer',
   'jdtls',
   'nil_ls',
+  'shuck',
 }
 
 vim.diagnostic.config {
