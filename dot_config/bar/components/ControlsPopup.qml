@@ -28,6 +28,8 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         radius: 20
+        topLeftRadius: 0
+        topRightRadius: 0
         color: Theme.panel
         border.color: Theme.border
         border.width: 1
