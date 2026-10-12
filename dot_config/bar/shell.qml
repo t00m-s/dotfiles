@@ -103,7 +103,7 @@ ShellRoot {
                                 label: Qt.formatDateTime(clock.date, Settings.timeFormat)
                                 accent: Theme.accent
                                 tooltip: Qt.formatDateTime(clock.date, "dddd, dd MMMM yyyy · HH:mm:ss")
-                                interactive: bar.compact
+                                interactive: true
                                 onClicked: bar.toggleCalendar()
                             }
                             Chip {
