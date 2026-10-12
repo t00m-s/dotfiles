@@ -10,12 +10,21 @@ ColumnLayout {
     property real level: 0
     property bool available: true
     property real pendingValue: 0
+    property int lastSentValue: -1
     readonly property real displayedLevel: slider.value
     signal moved(real value)
     spacing: 8
 
     function syncLevel() {
+        if (!slider.pressed && settle.running && Math.abs(root.level - pendingValue) <= 1)
+            settle.stop();
         if (!slider.pressed && !settle.running) slider.value = root.level;
+    }
+    function sendPending() {
+        const rounded = Math.round(pendingValue);
+        if (rounded === lastSentValue) return;
+        lastSentValue = rounded;
+        root.moved(pendingValue);
     }
     onLevelChanged: syncLevel()
     Component.onCompleted: syncLevel()
@@ -36,20 +45,23 @@ ColumnLayout {
         enabled: root.available
         from: 0
         to: 100
-        stepSize: 1
+        stepSize: 0
         // Keep user input independent of telemetry. Wait for the next sample
         // after releasing, rather than restoring an old value immediately.
         onMoved: {
             root.pendingValue = value;
             settle.restart();
-            debounce.restart();
+            if (!throttle.running) {
+                root.sendPending();
+                throttle.start();
+            }
         }
         onPressedChanged: {
-            if (pressed) { settle.stop(); root.pendingValue = value; }
+            if (pressed) { settle.stop(); root.pendingValue = value; root.lastSentValue = -1; }
             else if (enabled) {
-                debounce.stop();
+                throttle.stop();
                 settle.restart();
-                root.moved(root.pendingValue);
+                root.sendPending();
             }
         }
         background: Rectangle {
@@ -61,7 +73,16 @@ ColumnLayout {
             height: 6
             radius: 3
             color: Theme.hover
-            Rectangle { width: slider.visualPosition * parent.width; height: parent.height; radius: 3; color: slider.enabled ? Theme.accent : Theme.muted }
+            Rectangle {
+                width: slider.visualPosition * parent.width
+                height: parent.height
+                radius: 3
+                color: slider.enabled ? Theme.accent : Theme.muted
+                Behavior on width {
+                    enabled: !slider.pressed && !settle.running
+                    NumberAnimation { duration: 100; easing.type: Easing.OutCubic }
+                }
+            }
         }
         handle: Rectangle {
             objectName: "sliderHandle"
@@ -73,9 +94,22 @@ ColumnLayout {
             height: 16
             radius: 8
             color: slider.pressed ? Theme.text : Theme.accent
+            Behavior on x {
+                enabled: !slider.pressed && !settle.running
+                NumberAnimation { duration: 100; easing.type: Easing.OutCubic }
+            }
+            Behavior on color { ColorAnimation { duration: 100 } }
         }
     }
-    Timer { id: debounce; interval: 90; onTriggered: root.moved(root.pendingValue) }
+    Timer {
+        id: throttle
+        interval: 50
+        repeat: true
+        onTriggered: {
+            root.sendPending();
+            if (!slider.pressed) stop();
+        }
+    }
     Timer {
         id: settle
         interval: Math.max(500, Settings.pollSeconds * 1000 + 250)

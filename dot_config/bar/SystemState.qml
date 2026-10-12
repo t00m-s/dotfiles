@@ -26,13 +26,16 @@ Singleton {
         if (value !== undefined) args.push(String(value));
         if (action.indexOf("brightness") === 0 && Settings.backlightDevice)
             args.push("--device", Settings.backlightDevice);
-        // Serialize commands so rapid scrolling cannot race volume changes.
-        pending = pending.concat([args]);
+        // Keep relative steps/mute in order, but retain only the newest pending
+        // absolute slider value. Never replay an outdated trail of thumb positions.
+        if (action === "volume-set" || action === "brightness-set")
+            pending = pending.filter(item => item.action !== action);
+        pending = pending.concat([{action: action, command: args}]);
         drain();
     }
     function drain() {
         if (actionProcess.running || pending.length === 0) return;
-        actionProcess.command = pending[0];
+        actionProcess.command = pending[0].command;
         pending = pending.slice(1);
         error = "";
         actionProcess.running = true;
@@ -69,6 +72,13 @@ Singleton {
     }
     Process {
         id: actionProcess
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (!text.trim()) return;
+                try { root.data = Object.assign({}, root.data, JSON.parse(text)); }
+                catch (e) { console.warn("Invalid control response:", e); }
+            }
+        }
         stderr: StdioCollector { onStreamFinished: root.error = text.trim() }
         onExited: (code, status) => {
             if (code !== 0 && !root.error) root.error = "Control command failed (" + code + ")";

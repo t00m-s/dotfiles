@@ -307,6 +307,10 @@ def main():
             parser.error("this action requires a numeric value")
         try:
             control(args.action, args.value, args.device)
+            # Feed confirmed values back immediately rather than waiting for
+            # the next full telemetry sample (which may also query the GPU).
+            state = volume_info() if args.action.startswith("volume") else brightness_info(args.device)
+            print(json.dumps(state, allow_nan=False), flush=True)
         except (RuntimeError, OSError) as exc:
             print(str(exc), file=sys.stderr)
             return 1

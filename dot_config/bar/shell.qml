@@ -24,6 +24,16 @@ ShellRoot {
             readonly property bool compact: width < 1350
             readonly property var stats: SystemState.data
             readonly property var controlsWindow: controls
+            readonly property var calendarWindow: calendar
+
+            function toggleControls() {
+                calendar.visible = false;
+                controls.visible = !controls.visible;
+            }
+            function toggleCalendar() {
+                controls.visible = false;
+                calendar.visible = !calendar.visible;
+            }
 
             Rectangle {
                 anchors.fill: parent
@@ -89,15 +99,22 @@ ShellRoot {
                             Chip {
                                 background: "transparent"
                                 icon: "󰥔"
+                                objectName: "timeControl"
                                 label: Qt.formatDateTime(clock.date, Settings.timeFormat)
                                 accent: Theme.accent
                                 tooltip: Qt.formatDateTime(clock.date, "dddd, dd MMMM yyyy · HH:mm:ss")
+                                interactive: bar.compact
+                                onClicked: bar.toggleCalendar()
                             }
                             Chip {
+                                id: dateChip
+                                objectName: "dateControl"
                                 visible: !bar.compact
                                 label: Qt.formatDateTime(clock.date, Settings.dateFormat)
                                 background: "transparent"
                                 tooltip: Qt.formatDateTime(clock.date, "dddd, dd MMMM yyyy")
+                                interactive: true
+                                onClicked: bar.toggleCalendar()
                             }
                             Chip {
                                 background: "transparent"
@@ -131,7 +148,7 @@ ShellRoot {
                         accent: bar.stats.networkOnline ? Theme.green : Theme.muted
                         tooltip: (bar.stats.networkAddress || "No network connection") + "\n↓ " + SystemState.rate(bar.stats.networkRx) + "  ↑ " + SystemState.rate(bar.stats.networkTx) + "\nClick: quick controls"
                         interactive: true
-                        onClicked: controls.visible = !controls.visible
+                        onClicked: bar.toggleControls()
                         onRightClicked: { if (Settings.networkCommand.length) Quickshell.execDetached(Settings.networkCommand); }
                     }
                     Chip {
@@ -141,7 +158,7 @@ ShellRoot {
                         accent: bar.stats.muted ? Theme.red : Theme.accent
                         tooltip: "Volume · click: controls · right/middle-click: mute · scroll: ±5%"
                         interactive: true
-                        onClicked: controls.visible = !controls.visible
+                        onClicked: bar.toggleControls()
                         onRightClicked: SystemState.control("volume-mute")
                         onMiddleClicked: SystemState.control("volume-mute")
                         onScrolled: delta => { if (delta) SystemState.control("volume-step", delta > 0 ? 5 : -5); }
@@ -153,7 +170,7 @@ ShellRoot {
                         accent: Theme.yellow
                         tooltip: "Brightness · click: controls · scroll: ±5%"
                         interactive: true
-                        onClicked: controls.visible = !controls.visible
+                        onClicked: bar.toggleControls()
                         onScrolled: delta => { if (delta) SystemState.control("brightness-step", delta > 0 ? 5 : -5); }
                     }
                     Chip {
@@ -169,6 +186,7 @@ ShellRoot {
                 }
             }
             ControlsPopup { id: controls; barWindow: bar }
+            CalendarPopup { id: calendar; barWindow: bar; anchorItem: dateChip.visible ? dateChip : centerContent; today: clock.date }
         }
     }
 }

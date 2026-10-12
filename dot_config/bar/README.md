@@ -35,6 +35,10 @@ exec-once = quickshell -p ~/.config/bar/shell.qml
 - Focused window title with full-title hover tooltip.
 - CPU/GPU temperature, CPU utilization, memory utilization; detailed tooltips.
 - Time and date (date moves to the time tooltip on narrower screens).
+- Click the date for a Monday-first calendar with month navigation, today's date
+  highlighted, day selection and a Today button. Click outside, the date again,
+  or Close to dismiss. On narrow screens, click the time instead. The calendar
+  follows the theme and has square top corners with rounded bottom corners.
 - Native StatusNotifier tray: left-click activate, right-click menu,
   middle-click secondary action, and scrolling.
 - Network interface, IP address and live receive/transmit rates. A route/link
@@ -102,7 +106,12 @@ Volume uses the default PipeWire output and caps changes at 100%. Brightness
 changes stay above zero; this controls a Linux backlight, **not external-monitor
 DDC/CI brightness**. If brightness writes fail, check your distribution's
 brightnessctl/udev permissions. No privileged commands are run by this config.
-Control and monitor readings refresh every two seconds by default.
+Telemetry readings refresh every two seconds by default.
+Slider gestures are continuous, with hardware updates throttled to roughly
+50 ms and the final value flushed on release. Pending absolute changes are
+coalesced so outdated values do not build up; confirmed volume/brightness values
+update the bar immediately. Idle thumb/track changes animate briefly, while
+dragging follows the pointer directly without animation lag.
 
 ## Checks / troubleshooting
 
