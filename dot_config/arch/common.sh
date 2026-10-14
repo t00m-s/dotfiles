@@ -65,6 +65,8 @@ configure_user() {
 
 configure_common() {
 	configure_network
+	sudo install -Dm644 "$SCRIPT_DIR/arch/scx.service" /etc/systemd/system/scx.service
+	sudo install -Dm644 "$SCRIPT_DIR/arch/scx.conf" /etc/default/scx
 	sudo tee /etc/fonts/local.conf <<EOF
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -162,6 +164,7 @@ EOF
 }
 
 install_aur_packages() {
+	rustup default stable
 	if ! command -v paru &>/dev/null; then
 		(
 			build_dir=$(mktemp -d)
