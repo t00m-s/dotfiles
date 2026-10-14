@@ -88,6 +88,7 @@ PanelWindow {
             }
             ControlSlider {
                 objectName: "brightnessSlider"
+                visible: available
                 Layout.fillWidth: true
                 title: "Brightness"
                 icon: "󰃠"

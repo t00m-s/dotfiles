@@ -166,6 +166,7 @@ ShellRoot {
                     Chip {
                         background: "transparent"
                         icon: "󰃠"
+                        visible: bar.stats.brightness !== null && bar.stats.brightness !== undefined
                         label: SystemState.percent(bar.stats.brightness)
                         accent: Theme.yellow
                         tooltip: "Brightness · click: controls · scroll: ±5%"

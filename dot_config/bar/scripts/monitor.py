@@ -87,9 +87,10 @@ def temperature(kind, override="", hwmon=Path("/sys/class/hwmon"), device_path=N
     return round(selected[3], 1), selected[1] + (" / " + selected[2] if selected[2] else "")
 
 
-def connected_hdmi_gpu(drm=Path("/sys/class/drm")):
-    """Inspect cached connector state and map HDMI to its owning PCI GPU."""
-    for connector in sorted(drm.glob("card*-HDMI-*")):
+def connected_display_gpu(drm=Path("/sys/class/drm"), hdmi_only=False):
+    """Map a connected display (HDMI, DP, etc.) to its owning PCI GPU."""
+    pattern = "card*-HDMI-*" if hdmi_only else "card*-*"
+    for connector in sorted(drm.glob(pattern)):
         if read(connector / "status") != "connected":
             continue
         card = drm / connector.name.split("-", 1)[0]
@@ -100,6 +101,28 @@ def connected_hdmi_gpu(drm=Path("/sys/class/drm")):
     return None
 
 
+def connected_hdmi_gpu(drm=Path("/sys/class/drm")):
+    return connected_display_gpu(drm, hdmi_only=True)
+
+
+def gpu_cards(drm=Path("/sys/class/drm")):
+    cards = []
+    for card in sorted(drm.glob("card*")):
+        if not re.fullmatch(r"card\d+", card.name):
+            continue
+        device = (card / "device").resolve()
+        vendor = read(device / "vendor")
+        if vendor in ("0x10de", "0x1002", "0x8086"):
+            cards.append((device, vendor))
+    return cards
+
+
+def hybrid_laptop(drm=Path("/sys/class/drm")):
+    internal = any(drm.glob("card*-eDP-*")) or any(drm.glob("card*-LVDS-*"))
+    vendors = {vendor for _, vendor in gpu_cards(drm)}
+    return internal and {"0x1002", "0x10de"}.issubset(vendors)
+
+
 def nvidia_temperature(device=""):
     command = ["nvidia-smi"] + (["-i", device] if device else [])
     output = run(command + ["--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"])
@@ -107,24 +130,40 @@ def nvidia_temperature(device=""):
     return (max(values), "nvidia-smi") if values else (None, "")
 
 
+def card_temperature(device, vendor, hwmon):
+    default_driver = {"0x10de": "nvidia", "0x1002": "amdgpu", "0x8086": "i915"}[vendor]
+    driver_link = device / "driver"
+    driver = driver_link.resolve().name if driver_link.exists() else default_driver
+    value, sensor = temperature("gpu", driver, hwmon, device_path=device)
+    if value is None and vendor == "0x10de":
+        value, sensor = nvidia_temperature(device.name)
+    return value, sensor or driver + " (unavailable)"
+
+
 def gpu_temperature(override="", query_nvidia=False, follow_hdmi=False,
-                    hwmon=Path("/sys/class/hwmon"), drm=Path("/sys/class/drm")):
+                    hwmon=Path("/sys/class/hwmon"), drm=Path("/sys/class/drm"), profile="auto"):
     # Explicit sensor selection takes priority over HDMI auto-switching.
-    if follow_hdmi and not override:
+    laptop = profile == "laptop" or (profile == "auto" and hybrid_laptop(drm))
+    if follow_hdmi and laptop and not override:
         connected = connected_hdmi_gpu(drm)
         if connected:
             device, vendor = connected
-            driver = {"0x10de": "nvidia", "0x1002": "amdgpu", "0x8086": "i915"}[vendor]
-            value, sensor = temperature("gpu", driver, hwmon, device_path=device)
-            if value is None and vendor == "0x10de":
-                # Address the HDMI GPU by PCI ID, never by unstable card numbers.
-                value, sensor = nvidia_temperature(device.name)
-            return value, (sensor or driver + " (unavailable)") + " / HDMI"
+            value, sensor = card_temperature(device, vendor, hwmon)
+            return value, sensor + " / HDMI"
         # This machine's integrated GPU is AMD. Do not inspect NVIDIA sensors or
         # run nvidia-smi at all while HDMI is disconnected.
         return temperature("gpu", "amdgpu", hwmon)
+    if not laptop and not override:
+        # Desktops don't need an HDMI gate: DisplayPort and a lone headless GPU
+        # work too. Prefer a connected output, then the boot GPU, then the first.
+        cards = gpu_cards(drm)
+        target = connected_display_gpu(drm)
+        if target is None and cards:
+            target = next((card for card in cards if read(card[0] / "boot_vga") == "1"), cards[0])
+        if target:
+            return card_temperature(*target, hwmon)
     value, sensor = temperature("gpu", override, hwmon)
-    if value is None and query_nvidia:
+    if value is None and (query_nvidia or (profile == "desktop" and not override)):
         return nvidia_temperature()
     return value, sensor
 
@@ -244,6 +283,7 @@ class Monitor:
         result["cpuTemp"], result["cpuSensor"] = temperature("cpu", self.args.cpu_sensor)
         result["gpuTemp"], result["gpuSensor"] = gpu_temperature(
             self.args.gpu_sensor, self.args.nvidia, self.args.gpu_follow_hdmi,
+            profile=self.args.gpu_profile,
         )
         network, counters = network_info()
         now = time.monotonic()
@@ -301,6 +341,7 @@ def main():
     parser.add_argument("--device", default="")
     parser.add_argument("--nvidia", action="store_true")
     parser.add_argument("--gpu-follow-hdmi", action="store_true")
+    parser.add_argument("--gpu-profile", choices=("auto", "desktop", "laptop"), default="auto")
     args = parser.parse_args()
     if args.action not in ("sample", "stream"):
         if args.action != "volume-mute" and args.value is None:

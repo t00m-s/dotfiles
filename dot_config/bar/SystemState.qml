@@ -46,6 +46,7 @@ Singleton {
         command: ["python3", "-u", Quickshell.shellPath("scripts/monitor.py"), "stream",
                   "--interval", String(Settings.pollSeconds),
                   "--cpu-sensor", Settings.cpuSensor, "--gpu-sensor", Settings.gpuSensor,
+                  "--gpu-profile", Settings.gpuProfile,
                   "--device", Settings.backlightDevice]
                   .concat(Settings.queryNvidia ? ["--nvidia"] : [])
                   .concat(Settings.gpuFollowHdmi ? ["--gpu-follow-hdmi"] : [])

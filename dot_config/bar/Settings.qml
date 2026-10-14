@@ -11,10 +11,14 @@ QtObject {
     // Empty strings select the first matching hwmon sensor automatically.
     property string cpuSensor: ""
     property string gpuSensor: ""
-    // HDMI is wired to NVIDIA on this machine. Switch back to AMD on unplug.
+    // auto: detect the hybrid laptop; otherwise monitor the display-driving GPU.
+    // Override with "desktop" or "laptop" if detection needs correcting.
+    property string gpuProfile: "auto"
+    // Laptop profile only: HDMI is wired to NVIDIA; switch to AMD on unplug.
     property bool gpuFollowHdmi: true
     property string backlightDevice: ""
-    // Opt in: querying nvidia-smi can wake a sleeping discrete GPU.
+    // Optional fallback for manual/laptop sensor selection. A detected desktop
+    // NVIDIA card is queried automatically, independently of this setting.
     property bool queryNvidia: false
     // Optional program to launch on right-clicking the network chip.
     // Example: ["kitty", "-e", "nmtui"] (requires NetworkManager).

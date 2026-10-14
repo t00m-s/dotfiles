@@ -83,7 +83,30 @@ edge sensors take priority. Unavailable readings display `—`, rather than a
 misleading zero. To choose a particular driver, set `cpuSensor` or `gpuSensor`
 to its hwmon name, e.g. `k10temp` / `amdgpu`.
 
-`gpuFollowHdmi: true` (the default) switches the GPU temperature automatically:
+### Laptop and desktop GPU support
+
+`gpuProfile: "auto"` (the default) makes the same configuration portable:
+
+- **Hybrid laptop:** an internal eDP/LVDS connector plus AMD and NVIDIA DRM
+  cards enables the existing HDMI-gated behavior described below.
+- **Desktop / single GPU:** monitor the GPU driving a connected display,
+  regardless of HDMI or DisplayPort. If no output is connected, use the boot
+  GPU, falling back to the first detected GPU. AMD uses hwmon; NVIDIA uses its
+  hwmon sensor when available or `nvidia-smi` addressed by PCI ID otherwise.
+  No iGPU or HDMI connection is required, and `queryNvidia` need not be enabled.
+
+Your **Radeon RX 9070 XT** follows the AMD path: read the `amdgpu` hwmon **edge**
+temperature, preferring it over junction/hotspot and memory temperatures. No
+NVIDIA tool is invoked for this GPU. Leave `gpuProfile: "auto"` to use the same
+files on both machines; `gpuProfile: "desktop"` is an optional desktop override.
+
+If auto-detection is unsuitable, set `gpuProfile: "desktop"` on your desktop
+or `gpuProfile: "laptop"` for the original AMD/NVIDIA laptop behavior. The latter
+assumes an AMD integrated GPU; it is not a universal laptop hardware detector.
+In desktop mode, if DRM GPU discovery is unavailable, `nvidia-smi` is used as a
+fallback. Install it with your NVIDIA driver if applicable.
+
+On the hybrid laptop, `gpuFollowHdmi: true` switches the GPU temperature:
 AMD normally; the GPU owning a **connected HDMI port** when plugged in. On this
 machine HDMI is wired to NVIDIA. The monitor checks DRM connector status at each
 sample, uses the corresponding GPU's hwmon sensor if available, otherwise queries
@@ -99,7 +122,11 @@ sensor-selection behavior, set `gpuFollowHdmi: false`; `queryNvidia: true` then
 allows NVIDIA querying when no GPU hwmon sensor is available (off by default
 because querying can wake a sleeping GPU).
 
-Your AMD backlight is selected automatically; you can explicitly set
+Battery and brightness widgets hide automatically if the machine lacks a
+battery or Linux backlight. This keeps the desktop bar free of unavailable
+laptop controls. External-monitor DDC/CI brightness is not implemented.
+
+On the laptop, your AMD backlight is selected automatically; you can explicitly set
 `backlightDevice: "amdgpu_bl1"`.
 
 Volume uses the default PipeWire output and caps changes at 100%. Brightness

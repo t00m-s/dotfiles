@@ -10,7 +10,7 @@ spec.loader.exec_module(monitor)
 
 
 class MonitorTests(unittest.TestCase):
-    def hdmi_fixture(self, directory, status="disconnected"):
+    def hdmi_fixture(self, directory, status="disconnected", laptop=True):
         base = Path(directory)
         drm = base / "drm"
         hwmon = base / "hwmon"
@@ -21,6 +21,13 @@ class MonitorTests(unittest.TestCase):
         for device, vendor in ((amd, "0x1002"), (nvidia, "0x10de")):
             device.mkdir()
             (device / "vendor").write_text(vendor)
+        if laptop:
+            amd_card = drm / "card1"
+            amd_card.mkdir()
+            (amd_card / "device").symlink_to(amd, target_is_directory=True)
+            internal = drm / "card1-eDP-1"
+            internal.mkdir()
+            (internal / "status").write_text("connected")
         card = drm / "card9"
         card.mkdir()
         (card / "device").symlink_to(nvidia, target_is_directory=True)
@@ -34,6 +41,52 @@ class MonitorTests(unittest.TestCase):
         (sensor / "temp1_input").write_text("45000")
         (sensor / "temp1_label").write_text("edge")
         return drm, hwmon, connector, nvidia
+
+    @patch.object(monitor, "run", return_value="61")
+    def test_nvidia_desktop_without_hdmi_or_igpu(self, mocked):
+        with tempfile.TemporaryDirectory() as directory:
+            drm, hwmon, _, nvidia = self.hdmi_fixture(directory, laptop=False)
+            self.assertFalse(monitor.hybrid_laptop(drm))
+            self.assertEqual(monitor.gpu_temperature(follow_hdmi=True, hwmon=hwmon, drm=drm),
+                             (61, "nvidia-smi"))
+            self.assertEqual(mocked.call_args.args[0][:3], ["nvidia-smi", "-i", nvidia.name])
+
+    @patch.object(monitor, "run", return_value="62")
+    def test_nvidia_desktop_displayport(self, mocked):
+        with tempfile.TemporaryDirectory() as directory:
+            drm, hwmon, _, nvidia = self.hdmi_fixture(directory, laptop=False)
+            displayport = drm / "card9-DP-1"
+            displayport.mkdir()
+            (displayport / "status").write_text("connected")
+            self.assertEqual(monitor.connected_display_gpu(drm), (nvidia, "0x10de"))
+            self.assertEqual(monitor.gpu_temperature(follow_hdmi=True, hwmon=hwmon, drm=drm),
+                             (62, "nvidia-smi"))
+
+    @patch.object(monitor, "run")
+    def test_amd_desktop_uses_hwmon(self, mocked):
+        with tempfile.TemporaryDirectory() as directory:
+            drm, hwmon, _, device = self.hdmi_fixture(directory, laptop=False)
+            (device / "vendor").write_text("0x1002")
+            sensor_link = hwmon / "hwmon0/device"
+            sensor_link.unlink()
+            sensor_link.symlink_to(device, target_is_directory=True)
+            # Radeon RX 9070 XT / RDNA4: use edge, not the hotter junction or
+            # memory sensor, even when all three are exposed by amdgpu.
+            sensor = hwmon / "hwmon0"
+            (sensor / "temp2_input").write_text("78000")
+            (sensor / "temp2_label").write_text("junction")
+            (sensor / "temp3_input").write_text("65000")
+            (sensor / "temp3_label").write_text("mem")
+            self.assertEqual(monitor.gpu_temperature(follow_hdmi=True, hwmon=hwmon, drm=drm),
+                             (45, "amdgpu / edge"))
+            mocked.assert_not_called()
+
+    @patch.object(monitor, "run", return_value="63")
+    def test_explicit_desktop_profile_without_drm(self, mocked):
+        with tempfile.TemporaryDirectory() as directory:
+            empty = Path(directory)
+            self.assertEqual(monitor.gpu_temperature(profile="desktop", hwmon=empty, drm=empty),
+                             (63, "nvidia-smi"))
 
     @patch.object(monitor, "run", return_value="70")
     def test_hdmi_connect_and_unplug_switch_gpu(self, mocked):
