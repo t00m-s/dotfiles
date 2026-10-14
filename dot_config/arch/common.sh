@@ -17,7 +17,7 @@ COMMON_PACKAGES=(
 	ttf-firacode-nerd ttf-jetbrains-mono-nerd noto-fonts noto-fonts-emoji
 	cups sane sane-airscan avahi nss-mdns
 	obsidian signal-desktop telegram-desktop nautilus gvfs udisks2 yazi 7zip ghostty
-	zip python-dbus python-click python-click-alias python-tomlkit spotify-launcher darkman scx-scheds scx-tools
+	zip python-dbus python-click python-click-aliases python-tomlkit spotify-launcher darkman scx-scheds scx-tools
 )
 COMMON_SERVICES=(scx iwd systemd-networkd systemd-resolved bluetooth docker greetd upower sshd cups avahi-daemon udisks2)
 AUR_PACKAGES=(zen-browser-bin ttf-twemoji vesktop-bin epson-inkjet-printer-escpr epson-inkjet-printer-escpr2 bibata-cursor-theme-bin)
@@ -46,7 +46,15 @@ EOF
 }
 
 install_packages() {
-	sudo pacman -S --needed --noconfirm "${COMMON_PACKAGES[@]}" "${PROFILE_PACKAGES[@]}"
+	if ! pacman-conf --repo-list | grep -qx multilib; then
+		sudo tee -a /etc/pacman.conf <<EOF
+
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+EOF
+	fi
+	# Refresh databases with a full upgrade to avoid a partial Arch upgrade.
+	sudo pacman -Syu --needed --noconfirm "${COMMON_PACKAGES[@]}" "${PROFILE_PACKAGES[@]}"
 }
 
 configure_user() {
