@@ -11,7 +11,7 @@ local terminal = 'GTK_IM_MODULE=simple ghostty'
 local fileManager = terminal .. ' -e yazi'
 local menu = 'fuzzel'
 local browser = 'zen-browser'
-local bar = 'waybar'
+local bar = 'QT_IM_MODULE=compose quickshell -p ~/.config/bar/shell.qml'
 
 -------------------
 ---- AUTOSTART ----
