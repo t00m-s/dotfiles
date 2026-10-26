@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # HP Omen: Ryzen CPU, AMD integrated GPU, NVIDIA discrete GPU.
 # Profile values are consumed by common.sh after this file is sourced.
-PROFILE_HOSTNAME=poldo # shuck: ignore=C001
+PROFILE_HOSTNAME=poldo                                         # shuck: ignore=C001
 PROFILE_PACKAGES=(nvidia-dkms nvidia-utils lib32-nvidia-utils) # shuck: ignore=C001
-PROFILE_SERVICES=(omen-fan nvidia-powerd) # shuck: ignore=C001
+PROFILE_SERVICES=(omen-fan nvidia-powerd)                      # shuck: ignore=C001
 
 configure_profile() {
 	sudo mkdir -p /etc/modprobe.d /etc/modules-load.d
