@@ -13,7 +13,10 @@ PanelWindow {
     property date today: new Date()
     property date displayedMonth: new Date(today.getFullYear(), today.getMonth(), 1, 12)
     property date selectedDate: today
+
+    readonly property var locale: Qt.locale("it_IT")
     readonly property var days: monthCells(displayedMonth.getFullYear(), displayedMonth.getMonth())
+
     screen: barWindow.screen
     anchors { top: true; left: true }
     margins.top: barWindow.height + Settings.outerMargin
@@ -34,18 +37,22 @@ PanelWindow {
         return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth()
             && a.getDate() === b.getDate();
     }
+
     function monthCells(year, month) {
         const first = new Date(year, month, 1, 12);
-        const offset = (first.getDay() + 6) % 7; // Monday first.
+        const offset = (first.getDay() + 6) % 7;
         return Array.from({length: 42}, (_, index) => new Date(year, month, 1 - offset + index, 12));
     }
+
     function goMonth(offset) {
         displayedMonth = new Date(displayedMonth.getFullYear(), displayedMonth.getMonth() + offset, 1, 12);
     }
+
     function showToday() {
         selectedDate = today;
         displayedMonth = new Date(today.getFullYear(), today.getMonth(), 1, 12);
     }
+
     onVisibleChanged: { if (visible) showToday(); }
 
     HyprlandFocusGrab {
@@ -53,6 +60,7 @@ PanelWindow {
         active: root.visible
         onCleared: root.visible = false
     }
+
     Rectangle {
         anchors.fill: parent
         radius: 20
@@ -61,17 +69,27 @@ PanelWindow {
         color: Theme.panel
         border.color: Theme.border
         border.width: 1
+
         ColumnLayout {
             id: content
             anchors { top: parent.top; left: parent.left; right: parent.right; margins: 16 }
             spacing: 12
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 4
-                Chip { objectName: "calendarPrevious"; icon: "‹"; interactive: true; tooltip: "Previous month"; onClicked: root.goMonth(-1) }
+
+                Chip {
+                    objectName: "calendarPrevious"
+                    icon: "‹"
+                    interactive: true
+                    tooltip: "Previous month"
+                    onClicked: root.goMonth(-1)
+                }
+
                 Text {
                     objectName: "calendarMonth"
-                    text: Qt.formatDateTime(root.displayedMonth, "MMMM yyyy")
+                    text: root.displayedMonth.toLocaleDateString(root.locale, "MMMM yyyy")
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignHCenter
                     elide: Text.ElideRight
@@ -80,18 +98,35 @@ PanelWindow {
                     font.pixelSize: 14
                     font.bold: true
                 }
-                Chip { objectName: "calendarNext"; icon: "›"; interactive: true; tooltip: "Next month"; onClicked: root.goMonth(1) }
-                Chip { objectName: "closeCalendar"; icon: "󰅖"; interactive: true; tooltip: "Close"; onClicked: root.visible = false }
+
+                Chip {
+                    objectName: "calendarNext"
+                    icon: "›"
+                    interactive: true
+                    tooltip: "Next month"
+                    onClicked: root.goMonth(1)
+                }
+
+                Chip {
+                    objectName: "closeCalendar"
+                    icon: "󰅖"
+                    interactive: true
+                    tooltip: "Close"
+                    onClicked: root.visible = false
+                }
             }
+
             Row {
                 Layout.fillWidth: true
                 spacing: 4
+
                 Repeater {
                     model: 7
+
                     Text {
                         required property int index
                         width: (dayGrid.width - 24) / 7
-                        text: Qt.formatDateTime(new Date(2024, 0, 1 + index), "ddd")
+                        text: root.locale.standaloneDayName((index + 1) % 7, Locale.ShortFormat)
                         horizontalAlignment: Text.AlignHCenter
                         color: Theme.muted
                         font.family: Theme.font
@@ -99,13 +134,16 @@ PanelWindow {
                     }
                 }
             }
+
             Grid {
                 id: dayGrid
                 Layout.fillWidth: true
                 columns: 7
                 spacing: 4
+
                 Repeater {
                     model: root.days
+
                     Rectangle {
                         id: day
                         required property var modelData
@@ -113,13 +151,16 @@ PanelWindow {
                         readonly property bool currentMonth: modelData.getMonth() === root.displayedMonth.getMonth()
                         readonly property bool isToday: root.sameDay(modelData, root.today)
                         readonly property bool selected: root.sameDay(modelData, root.selectedDate)
+
                         width: (dayGrid.width - 24) / 7
                         height: 32
                         radius: 10
                         color: selected ? Theme.accent : (Settings.hoverEnabled && mouse.containsMouse ? Theme.hover : "transparent")
                         border.width: isToday && !selected ? 1 : 0
                         border.color: Theme.accent
+
                         Behavior on color { ColorAnimation { duration: 100 } }
+
                         Text {
                             anchors.centerIn: parent
                             text: day.modelData.getDate()
@@ -129,6 +170,7 @@ PanelWindow {
                             font.pixelSize: 12
                             font.bold: day.isToday
                         }
+
                         MouseArea {
                             id: mouse
                             anchors.fill: parent
@@ -139,17 +181,26 @@ PanelWindow {
                     }
                 }
             }
+
             RowLayout {
                 Layout.fillWidth: true
+
                 Text {
-                    text: Qt.formatDateTime(root.selectedDate, "ddd, dd MMM yyyy")
+                    text: root.selectedDate.toLocaleDateString(root.locale, "ddd, dd MMM yyyy")
                     Layout.fillWidth: true
                     elide: Text.ElideRight
                     color: Theme.muted
                     font.family: Theme.font
                     font.pixelSize: 11
                 }
-                Chip { objectName: "calendarToday"; label: "Today"; accent: Theme.accent; interactive: true; onClicked: root.showToday() }
+
+                Chip {
+                    objectName: "calendarToday"
+                    label: "Today"
+                    accent: Theme.accent
+                    interactive: true
+                    onClicked: root.showToday()
+                }
             }
         }
     }
