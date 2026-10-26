@@ -24,6 +24,7 @@ hl.on('hyprland.start', function()
   hl.exec_cmd 'hypridle'
   hl.exec_cmd 'hyprctl setcursor Bibata-Modern-Classic 24'
   hl.exec_cmd 'cursor-clip --daemon'
+  hl.exec_cmd 'darkman run'
 end)
 
 -------------------------------
