@@ -103,14 +103,14 @@ hl.bind(mainMod .. ' + W', hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. ' + Q', hl.dsp.window.close())
 hl.bind(
   mainMod .. ' + M',
-  hl.dsp.exec_cmd "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"
+  hl.dsp.exec_cmd "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit"
 )
 hl.bind(mainMod .. ' + E', hl.dsp.exec_cmd(fileManager))
 hl.bind('XF86Launch2', hl.dsp.exec_cmd 'hyprlock')
 hl.bind('XF86Calculator', hl.dsp.exec_cmd 'galculator')
 hl.bind(mainMod .. ' + V', hl.dsp.window.float { action = 'toggle' })
 hl.bind(mainMod .. ' + SPACE', hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. ' + B', hl.dsp.exec_cmd 'pkill -USR1 waybar')
+hl.bind(mainMod .. ' + B', hl.dsp.exec_cmd 'pgrep -x quickshell >/dev/null && pkill -x quickshell || quickshell -p ~/.config/bar/shell.qml')
 hl.bind(mainMod .. ' + P', hl.dsp.window.pseudo())
 hl.bind('F11', hl.dsp.window.fullscreen { action = 'toggle' })
 hl.bind(mainMod .. ' + H', hl.dsp.focus { direction = 'left' })
