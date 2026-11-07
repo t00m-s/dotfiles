@@ -9,4 +9,4 @@ light) ICON=weather-clear ;;
 default) exit 1 ;;
 esac
 
-notify-send --app-name="darkman" --urgency=low --icon="$ICON" "switching to $1 mode"
+notify-send --app-name="darkman" --urgency=low --icon="$ICON" "Switching to $1 mode"

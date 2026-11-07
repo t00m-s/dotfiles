@@ -2,10 +2,12 @@
 set -eu
 
 case "${1:-}" in
-dark) hyprsunset --temperature 3500 ;;
-light) hyprsunset --temperature 6000 ;;
-*)
-	echo "Usage: $0 dark|light" >&2
-	exit 1
+dark)
+	pkill -x hyprsunset 2>/dev/null || true
+	setsid hyprsunset --temperature 3500 >/dev/null 2>&1 &
+	;;
+light)
+	pkill -x hyprsunset 2>/dev/null || true
+	setsid hyprsunset --temperature 5500 >/dev/null 2>&1 &
 	;;
 esac
